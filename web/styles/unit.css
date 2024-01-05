@@ -1,0 +1,143 @@
+/* Style for the body */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Style for the form */
+form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Style for the fieldset */
+fieldset {
+    margin-bottom: 20px;
+}
+
+/* Style for the radio buttons */
+input[type="radio"] {
+    margin-right: 5px;
+}
+
+/* Style for the header */
+header {
+    background-color: #007bff;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+}
+
+/* Style for the select box */
+select {
+    padding: 5px;
+    width: 100%;
+}
+
+/* Style for the submit button */
+input[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Style for the h1 heading */
+h1 {
+    color: #333;
+}
+
+/* Style for the units container */
+.units-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* Style for individual unit */
+.unit {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 10px;
+    width: 200px;
+}
+
+/* Media query for responsiveness */
+@media screen and (max-width: 600px) {
+    form {
+        max-width: 100%;
+    }
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+.collapsible {
+    cursor: pointer;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    margin-bottom: 5px;
+    position: relative;
+    padding-left: 25px; /* Added padding to avoid collision */
+}
+
+.collapsible::before {
+    content: "\25B6"; /* Unicode character for right-pointing triangle */
+    position: absolute;
+    left: 10px; /* Adjusted the left position */
+}
+
+.active::before {
+    content: "\25BC"; /* Unicode character for down-pointing triangle */
+}
+
+.collapsible:hover {
+    background-color: #ddd;
+}
+
+.content {
+    display: none;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    padding-left: 25px; /* Added padding to avoid collision */
+}
+
+/*ul {
+    list-style: none;
+    padding: 0;
+}
+
+.collapsible {
+    cursor: pointer;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    margin-bottom: 5px;
+}
+
+.collapsible:hover {
+    background-color: #ddd;
+}
+
+.content {
+    display: none;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+}*/
