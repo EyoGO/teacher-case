@@ -100,7 +100,7 @@ public class ActivityService {
                 .collect(Collectors.toList());
     }
 
-    private void fetchCascade(Integer userId, Integer unitId, List<Activity> allActivitiesOfUserByUnit) {
+    private void fetchCascade(Integer userId, Integer unitId, List<Activity> allActivitiesOfUserByUnit) {//TODO try using batch SQL query (accumulate queries)
         List<Unit> subUnits = unitDao.findSubUnits(unitId);
         for (Unit unit: subUnits) {
             allActivitiesOfUserByUnit.addAll(activitiyDao.findByUserAndUnit(userId, unit.getId()));

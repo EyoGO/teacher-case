@@ -12,14 +12,14 @@
 <html>
 <head>
     <title>Title</title>
-    <link rel="stylesheet" type="text/css" href="../../styles/activity.css">
-    <script src="https://cdn.tiny.cloud/1/n4lpmnzgq22njcedrdtlfr6p28378luleejxerx6yc5g0gzf/tinymce/6/tinymce.min.js"
+    <link rel="stylesheet" type="text/css" href="../../styles/unit.css">
+    <script src="../../libs/tinymce/js/tinymce/tinymce.min.js"
             referrerpolicy="origin"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
 <%@include file="header.jsp" %>
-<a href="${pageContext.request.contextPath}/unit">Назад</a>
+<a href="${pageContext.request.contextPath}/unit">⇦</a>
 <h1>${sessionScope.unit.name}</h1>
 <h2>Список активностей:</h2>
 
@@ -28,101 +28,111 @@
     <th>Опис</th>
     <c:forEach var="activity" items="${requestScope.activities}">
         <tr>
-            <td>${activity.name}</td> 
+            <td>${activity.name}</td>
             <td>${activity.description}</td>
             <c:if test="${sessionScope.unit.managedByAdmin ? sessionScope.user.role == Role.ADMIN : sessionScope.selectedUserId == sessionScope.user.id}">
-                <td><form action="${pageContext.request.contextPath}/activity?id=${activity.id}&action=delete"
-                      method="post">
-                    <input type="submit" name="delete" value="Видалити"/>
-                </form></td>
-                <td><button type="button" onclick='setUpdateFormValues(${activity.id}, `${activity.name.replaceAll("\'", "&apos;")}`)'>Змінити</button></td>
-<%--                Не давати Update кнопку, якщо ти не автор і заборонити це на бекенді--%>
+                <td class="activityTableDataWithButton">
+                    <button type="button"
+                            onclick='setUpdateFormValues(${activity.id}, `${activity.name.replaceAll("\'", "&apos;")}`)'>
+                        Змінити
+                    </button>
+                </td>
+                <td class="activityTableDataWithButton">
+                    <form onSubmit="if(!confirm('Дійсно видалити запис з назвою ${activity.name}?')){return false;}"
+                          action="${pageContext.request.contextPath}/activity?id=${activity.id}&action=delete"
+                          method="post">
+                        <input type="submit" name="delete" value="Видалити"/>
+                    </form>
+                </td>
+                <%--                Не давати Update кнопку, якщо ти не автор і заборонити це на бекенді--%>
             </c:if>
         </tr>
     </c:forEach>
     <c:if test="${sessionScope.unit.managedByAdmin ? sessionScope.user.role == Role.ADMIN : sessionScope.selectedUserId == sessionScope.user.id}">
         <tr>
             <td>
-            <button id="openPopup">Додати активність</button>
+                <button id="openPopup">Додати активність</button>
 
-            <div id="popup" class="popup">
-                <div class="popup-content">
-                    <span class="close" id="closePopup">&times;</span>
-                    <h2 id="popupHeading">Додавання активності</h2>
-                    <form id="popupForm"
-                          action="${pageContext.request.contextPath}/activity?unit-id=${param.get("unit-id")}&action=add"
-                          method="post">
-                        <label for="name">Назва активності:</label>
-                        <input type="text" id="name" name="name" required>
-                        <br>
-                        <textarea id="basic-example" name="description"></textarea>
-                        <button type="submit">Submit</button>
-                    </form>
+                <div id="popup" class="popup">
+                    <div class="popup-content">
+                        <span class="close" id="closePopup">&times;</span>
+                        <h2 id="popupHeading">Додавання активності</h2>
+                        <form id="popupForm"
+                              action="${pageContext.request.contextPath}/activity?unit-id=${param.get("unit-id")}&action=add"
+                              method="post">
+                            <label for="name">Назва активності:</label>
+                            <input type="text" id="name" name="name" required>
+                            <br>
+                            <textarea id="basic-example" name="description"></textarea>
+                            <button type="submit">Submit</button>
+                        </form>
+                    </div>
                 </div>
-            </div>
-            <script>
-                document.getElementById("openPopup").addEventListener("click", function () {
-                    tinymce.get('basic-example').setContent(``);
-                    document.getElementById("popupHeading").innerText = `Додавання активності`;
-                    document.getElementById("name").value = ``;
-                    document.getElementById("popupForm").action = `${pageContext.request.contextPath}/activity?unit-id=${param.get("unit-id")}&action=add`;
-                    document.getElementById("popup").style.display = "block";
-                });
+                <script>
+                    document.getElementById("openPopup").addEventListener("click", function () {
+                        tinymce.get('basic-example').setContent(``);
+                        document.getElementById("popupHeading").innerText = `Додавання активності`;
+                        document.getElementById("name").value = ``;
+                        document.getElementById("popupForm").action = `${pageContext.request.contextPath}/activity?unit-id=${param.get("unit-id")}&action=add`;
+                        document.getElementById("popup").style.display = "block";
+                    });
 
-                document.getElementById("closePopup").addEventListener("click", function () {
-                    document.getElementById("popup").style.display = "none";
-                });
+                    document.getElementById("closePopup").addEventListener("click", function () {
+                        document.getElementById("popup").style.display = "none";
+                    });
 
-                // Initialize TinyMCE for the textarea with ID 'basic-example'tinymce.get('yourTextareaId').setContent(textFromBackend);
-                tinymce.init({
-                    selector: 'textarea#basic-example',
-                    images_upload_url: '/images',
-                    images_upload_base_path: '/images',
-                    skin: "oxide-dark",
-                    content_css: "dark",
-                    plugins: 'image link code',
-                    toolbar: 'undo redo | bold italic | image link',
-                    // language: 'uk'
-                });
+                    // Initialize TinyMCE for the textarea with ID 'basic-example'tinymce.get('yourTextareaId').setContent(textFromBackend);
+                    tinymce.init({
+                        selector: 'textarea#basic-example',
+                        images_upload_url: '/images',
+                        images_upload_base_path: '/images',
+                        skin: "oxide-dark",
+                        content_css: "dark",
+                        plugins: 'image link code',
+                        toolbar: 'undo redo | bold italic | image link',
+                        // language: 'uk'
+                    });
 
-                function setUpdateFormValues(activityId, activityName) {
-                    fetchRecordData(activityId)
-                        .then(recordData => {
-                            tinymce.get('basic-example').setContent(recordData.value.description);
-                            document.getElementById("popupHeading").innerText = `Редагування активності`;
-                            document.getElementById("name").value = activityName;
-                            document.getElementById("popupForm").action = `${pageContext.request.contextPath}/activity?unit-id=${param.get("unit-id")}&action=update&id=` + activityId;
-                            document.getElementById("popup").style.display = "block";
+                    function setUpdateFormValues(activityId, activityName) {
+                        fetchRecordData(activityId)
+                            .then(recordData => {
+                                tinymce.get('basic-example').setContent(recordData.value.description);
+                                document.getElementById("popupHeading").innerText = `Редагування активності`;
+                                document.getElementById("name").value = activityName;
+                                document.getElementById("popupForm").action = `${pageContext.request.contextPath}/activity?unit-id=${param.get("unit-id")}&action=update&id=` + activityId;
+                                document.getElementById("popup").style.display = "block";
+                            })
+                            .catch(error => {
+                                console.error('Error loading record for edit:', error);
+                            });
+                    }
+
+                    function fetchRecordData(recordId) {
+                        // Perform an AJAX request to fetch the record data
+                        return fetch(`/activity?id=` + recordId, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                            },
                         })
-                        .catch(error => {
-                            console.error('Error loading record for edit:', error);
-                        });
-                }
-                function fetchRecordData(recordId) {
-                    // Perform an AJAX request to fetch the record data
-                    return fetch(`/activity?id=` + recordId, {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json',
-                        },
-                    })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error(`Failed to fetch record data for record ID ` + recordId);
-                            }
-                            return response.json();
-                        });
-                }
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`Failed to fetch record data for record ID ` + recordId);
+                                }
+                                return response.json();
+                            });
+                    }
 
-                // document.getElementById("popupForm").addEventListener("submit", function (e) {
-                //     e.preventDefault();
-                //     // Add your form submission logic here
-                //     // You can access form fields using e.target
-                //     // e.target.name.value and e.target.email.value
-                //     // Close the popup when the form is submitted
-                //     document.getElementById("popup").style.display = "none";
-                // });
-            </script></td>
+                    // document.getElementById("popupForm").addEventListener("submit", function (e) {
+                    //     e.preventDefault();
+                    //     // Add your form submission logic here
+                    //     // You can access form fields using e.target
+                    //     // e.target.name.value and e.target.email.value
+                    //     // Close the popup when the form is submitted
+                    //     document.getElementById("popup").style.display = "none";
+                    // });
+                </script>
+            </td>
         </tr>
     </c:if>
 </table>

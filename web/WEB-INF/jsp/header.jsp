@@ -5,19 +5,24 @@
 
 <div>
     <div>
-        <img src="../../photo.jpg">
+        <img src="../../photo.jpg" class="headerImg">
     </div>
     <c:if test="${not empty sessionScope.user}">
-        <c:if test="${sessionScope.user.role == (Role.ADMIN)}">
-            <a href="${pageContext.request.contextPath}/registration">
-                <button type="button"><%--<fmt:message key="page.login.register.button"/>--%>Створити нового користувача</button>
-            </a>
-        </c:if>
-        <div id="logout">
-            <form action="${pageContext.request.contextPath}/logout" method="post">
-                <button type="submit">Вийти</button>
-            </form>
-        </div>
+        <ul class="menu">
+            <c:if test="${sessionScope.user.role == (Role.ADMIN)}">
+                <li>
+                    <form action="${pageContext.request.contextPath}/registration" method="get">
+                        <button type="submit">Створити нового користувача</button>
+                    </form>
+                </li>
+            </c:if>
+
+            <li>
+                <form action="${pageContext.request.contextPath}/logout" method="post">
+                    <button type="submit">Вийти</button>
+                </form>
+            </li>
+        </ul>
     </c:if>
 <%--    <div id="locale">--%>
 <%--        <form action="${pageContext.request.contextPath}/locale" method="post">--%>

@@ -31,10 +31,12 @@ public class ActivitiyDao implements Dao<Integer, Activity> {
             WHERE user_id = ?
             """;
 
+    //TODO: can be enhanced to order by predefined column with creation time
     private static final String FIND_BY_USER_AND_UNIT_ID = """
             SELECT *
             FROM activities
             WHERE user_id = ? AND unit_id = ?
+            ORDER BY id
             """;
 
     public static final String SAVE_SQL = "INSERT INTO activities (user_id, unit_id, activity_name, description, author_id) VALUES (?, ?, ?, ?, ?);";
