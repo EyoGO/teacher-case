@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>Title</title>
-    <link rel="stylesheet" type="text/css" href="../../styles/unit.css">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/styles/unit.css">
 </head>
 <body>
 <%--<img src="${pageContext.request.contextPath}/images/users/image.png" alt="User image"/>--%>

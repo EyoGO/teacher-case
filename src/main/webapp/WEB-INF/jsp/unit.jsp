@@ -13,7 +13,7 @@
 <html>
 <head>
     <title>Units</title>
-    <link rel="stylesheet" type="text/css" href="../../styles/unit.css">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/styles/unit.css">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

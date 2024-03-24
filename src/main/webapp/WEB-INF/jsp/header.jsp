@@ -5,7 +5,7 @@
 
 <div>
     <div>
-        <img src="../../photo.jpg" class="headerImg">
+        <img src="${pageContext.request.contextPath}/photo.jpg" class="headerImg">
     </div>
     <c:if test="${not empty sessionScope.user}">
         <ul class="menu">

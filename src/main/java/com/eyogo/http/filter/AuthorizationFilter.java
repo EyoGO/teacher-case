@@ -18,10 +18,10 @@ public class AuthorizationFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         String requestURI = ((HttpServletRequest) servletRequest).getRequestURI();
-        if (requestURI.equals("/login") || isWhitelisted(requestURI) || isUserLoggedIn(servletRequest)) {//TODO change to admin whitelist
+        if (requestURI.endsWith("/login") || isWhitelisted(requestURI) || isUserLoggedIn(servletRequest)) {//TODO change to admin whitelist
             filterChain.doFilter(servletRequest, servletResponse);
         } else {
-            ((HttpServletResponse) servletResponse).sendRedirect("/login");
+            ((HttpServletResponse) servletResponse).sendRedirect(((HttpServletRequest) servletRequest).getContextPath() + "/login");
         }
     }
 

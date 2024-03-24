@@ -45,7 +45,9 @@ public class ImageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String requestURI = req.getRequestURI();
-        String imagePath = requestURI.replace("/images", "");
+
+        int indexOfImages = requestURI.indexOf("/images");
+        String imagePath = requestURI.substring(indexOfImages + "/images".length());
 
         imageService.get(imagePath)
                 .ifPresentOrElse(image -> {

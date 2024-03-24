@@ -49,6 +49,6 @@ public class UnitServlet extends HttpServlet {
                 req.getSession().setAttribute("useCascade", useCascade);
             }
         }
-        resp.sendRedirect("/unit");
+        resp.sendRedirect(req.getContextPath() + "/unit");
     }
 }

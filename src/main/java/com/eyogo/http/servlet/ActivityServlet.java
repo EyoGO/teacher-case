@@ -74,7 +74,7 @@ public class ActivityServlet extends HttpServlet {
                     .build();
             try {
                 activityService.create(activityDto);
-                resp.sendRedirect("/activity?unit-id=" + ((GetUnitDto) req.getSession().getAttribute("unit")).getId());
+                resp.sendRedirect(req.getContextPath() + "/activity?unit-id=" + ((GetUnitDto) req.getSession().getAttribute("unit")).getId());
             } catch (ValidationException exception) {
                 req.setAttribute("errors", exception.getErrors());
                 doGet(req, resp);
@@ -83,7 +83,7 @@ public class ActivityServlet extends HttpServlet {
             String activityIdParameter = req.getParameter("id");
             Integer activityId = Integer.valueOf(activityIdParameter);
             activityService.delete(activityId);
-            resp.sendRedirect("/activity?unit-id=" + ((GetUnitDto) req.getSession().getAttribute("unit")).getId());
+            resp.sendRedirect(req.getContextPath() + "/activity?unit-id=" + ((GetUnitDto) req.getSession().getAttribute("unit")).getId());
         } else if (req.getParameter("action").equals("update")) {
             String activityIdParameter = req.getParameter("id");
             Integer activityId = Integer.valueOf(activityIdParameter);
@@ -96,7 +96,7 @@ public class ActivityServlet extends HttpServlet {
                     .build();
             try {
                 activityService.update(activityId, activityDto);
-                resp.sendRedirect("/activity?unit-id=" + ((GetUnitDto) req.getSession().getAttribute("unit")).getId());
+                resp.sendRedirect(req.getContextPath() + "/activity?unit-id=" + ((GetUnitDto) req.getSession().getAttribute("unit")).getId());
             } catch (ValidationException exception) {
                 req.setAttribute("errors", exception.getErrors());
                 doGet(req, resp);

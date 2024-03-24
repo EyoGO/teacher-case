@@ -12,7 +12,7 @@
 <html>
 <head>
     <title>Title</title>
-    <link rel="stylesheet" type="text/css" href="../../styles/unit.css">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/styles/unit.css">
     <script src="../../libs/tinymce/js/tinymce/tinymce.min.js"
             referrerpolicy="origin"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -84,8 +84,8 @@
                     // Initialize TinyMCE for the textarea with ID 'basic-example'tinymce.get('yourTextareaId').setContent(textFromBackend);
                     tinymce.init({
                         selector: 'textarea#basic-example',
-                        images_upload_url: '/images',
-                        images_upload_base_path: '/images',
+                        images_upload_url: '${pageContext.request.contextPath}/images',
+                        images_upload_base_path: '${pageContext.request.contextPath}/images',
                         skin: "oxide-dark",
                         content_css: "dark",
                         plugins: 'image link code',
@@ -109,7 +109,7 @@
 
                     function fetchRecordData(recordId) {
                         // Perform an AJAX request to fetch the record data
-                        return fetch(`/activity?id=` + recordId, {
+                        return fetch(`${pageContext.request.contextPath}/activity?id=` + recordId, {
                             method: 'GET',
                             headers: {
                                 'Accept': 'application/json',

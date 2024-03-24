@@ -35,7 +35,7 @@ public class LoginServlet extends HttpServlet {
 
     @SneakyThrows
     private void onLoginFail(HttpServletRequest req, HttpServletResponse resp) {
-        resp.sendRedirect("/login?error&email=" + req.getParameter("email"));
+        resp.sendRedirect(req.getContextPath() + "/login?error&email=" + req.getParameter("email"));
     }
 
     @SneakyThrows
@@ -47,9 +47,9 @@ public class LoginServlet extends HttpServlet {
             req.getSession().setAttribute("selectedUserId", user.getId());
         }
         if (user.getRole().equals(Role.ADMIN)) {
-            resp.sendRedirect("/unit");
+            resp.sendRedirect(req.getContextPath() + "/unit");
         } else {
-            resp.sendRedirect("/unit");
+            resp.sendRedirect(req.getContextPath() + "/unit");
         }
     }
 }
