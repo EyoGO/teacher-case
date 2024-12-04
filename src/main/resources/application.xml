@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="str1" name="s1,s11,s111" class="java.lang.String">
+        <constructor-arg value="TOP"/>
+    </bean>
+    <bean id="str2" name="s2,s22,s222" class="java.lang.String">
+        <constructor-arg value="TOP"/>
+    </bean>
+<!--    name - аліаси (за ними теж можна шукати)-->
+<!--    В першу чергу шукається по ID, якщо по айді немає, то по значенях в мапі aliasMap (там знаходить ID)-->
+</beans>
