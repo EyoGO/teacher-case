@@ -5,7 +5,7 @@ Detail: Ключ (first_name, last_name)=(123, 123213) вже існує.
 
 
 Deployment:
-1. (`or step 7`) Change `application.properties` file.
+1. (`or step 5`) Change `application.properties` file.
 2. Build `war` using `mvn install` command.
 3. Add `war` to `webapps` folder of `Tomcat`.
 4. Start `Tomcat` using `startup.bat`.
