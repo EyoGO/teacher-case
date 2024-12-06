@@ -4,6 +4,7 @@ import com.eyogo.http.util.PropertiesUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -11,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Optional;
 
+@Service
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ImageService {
 

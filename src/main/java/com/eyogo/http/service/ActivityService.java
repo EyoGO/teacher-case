@@ -10,11 +10,13 @@ import com.eyogo.http.entity.Unit;
 import com.eyogo.http.mapper.CreateActivityMapper;
 import com.eyogo.http.mapper.GetUserMapper;
 import lombok.SneakyThrows;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 public class ActivityService {
 
     private static final ActivityService INSTANCE = new ActivityService();

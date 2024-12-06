@@ -8,6 +8,7 @@ import com.eyogo.http.dto.GetUnitDto;
 import com.eyogo.http.entity.Activity;
 import com.eyogo.http.entity.Unit;
 import com.eyogo.http.mapper.GetUserMapper;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,13 +16,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 public class UnitService {
 
     private static final UnitService INSTANCE = new UnitService();
 
     private final UnitDao unitDao = UnitDao.getInstance();
 
-    private UnitService() {
+    public UnitService() {
     }
 
     public List<GetUnitDto> findAll() {

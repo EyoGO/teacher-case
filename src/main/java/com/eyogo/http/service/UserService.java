@@ -11,11 +11,13 @@ import com.eyogo.http.validation.CreateUserValidator;
 import com.eyogo.http.validation.ValidationResult;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 public class UserService {
 
     private static final UserService INSTANCE = new UserService();
@@ -26,7 +28,7 @@ public class UserService {
     private final CreateUserMapper createUserMapper = CreateUserMapper.getInstance();
     private final ImageService imageService = ImageService.getInstance();
 
-    private UserService() {
+    public UserService() {
     }
 
     public Optional<GetUserDto> login(String email, String password) {
