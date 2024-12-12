@@ -1,21 +1,29 @@
 package com.eyogo.http;
 
-import com.eyogo.http.config.ApplicationConfiguration;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.SpringProperties;
 
+@Slf4j
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class ApplicationRunner {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(ApplicationRunner.class, args);
-        System.out.println(context.getBeanDefinitionCount());
+        log.info(String.valueOf(context.getBeanDefinitionCount()));
 
-        System.out.println(SpringProperties.getProperty("test.message"));
-        System.out.println(SpringProperties.getProperty("test.full.message"));
+        log.info(SpringProperties.getProperty("test.message"));
+        log.info(SpringProperties.getProperty("test.full.message"));
+
+        log.info(SpringProperties.getProperty("app.name"));
+        log.info(SpringProperties.getProperty("app.description"));
+
+        TestComponent bean = context.getBean(TestComponent.class);
+        log.info(bean.toString());
 
 //        try (var appContext = new ClassPathXmlApplicationContext("application.xml")) {
         // Need to close AC to call close() - trigger lifecycle callback

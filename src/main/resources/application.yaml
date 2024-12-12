@@ -1,0 +1,30 @@
+app:
+  description: ${app.name} is a Spring Boot application written by ${username:Unknown}
+  name: MyApp
+db:
+  driver: org.postgresql.Driver
+  user: postgres
+  password: root
+  url: jdbc:postgresql://localhost:5432/postgres
+  schema: teacher-case
+
+  pool:
+    size: 12
+    timeout: 10
+  properties:
+    first: 123
+    second: 456
+    third: Third
+  pools:
+    - size: 1
+      timeout: 1
+    - size: 2
+      timeout: 2
+    - size: 3
+      timeout: 3
+image:
+  base:
+    url: D:/Software/Tools/javaWorkspace/teacher-case/images
+test:
+  full:
+    message: ${db.schema} AHAHA

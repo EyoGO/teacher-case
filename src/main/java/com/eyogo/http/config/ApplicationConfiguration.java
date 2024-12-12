@@ -2,6 +2,7 @@ package com.eyogo.http.config;
 
 import com.eyogo.http.service.UnitService;
 import com.eyogo.http.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,12 +10,13 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+@Slf4j
 @Configuration
 /* Ця анотація обробляється в першу чергу завдяки BFPP ConfigurationClassPostProcessor, який автоматично додається
 завдяки new AnnotationConfigApplicationContext(ApplicationConfiguration.class).
 У випадку ж використання XML і new ClassPathXmlApplicationContext("application.xml") цей BFPP підключається вручну або завдяки <context:annotation-config/>*/
-@PropertySource("classpath:application.properties")
-@ComponentScan(basePackages = "com.eyogo.http")
+//@PropertySource("classpath:application.yaml")
+//@ComponentScan(basePackages = "com.eyogo.http")
 // @Import(MyWebConfig.class) -додає до поточного конфіга вказані тут, як правило вписують те що не скануємо в цьому, але потрібне.
 // @ImportResource("...app.xml") - додає xml конфіг і дає можливість змішувати XML, annotation, java-based
 public class ApplicationConfiguration {
@@ -36,13 +38,13 @@ public class ApplicationConfiguration {
     // Завдяки Java-based конфігу ми тепер можемо створити не тільки 1 бін. Бо @Component над класом давав лише таку можливість.
     @Bean
     public UserService userService2(@Value("${db.user}") String user) {
-        System.out.println(user);
+        log.info(user);
         return new UserService();
     }
 
     @Bean
     public UnitService unitService2(@Qualifier("userService2") UserService userService2) {
-        System.out.println("1. Injected UserService " + userService2);
+        log.info("1. Injected UserService " + userService2);
         return new UnitService();
     }
 
@@ -53,8 +55,9 @@ public class ApplicationConfiguration {
         // чи був уже створений цей бін. Якщо був - то просто поверни його. Саме тому, що б я не передавав параметром далі
         // в викликах userService("2"), повернеться бін з тим параметром яким він був попередньо створений.
         UserService userService = userService2(user);
-        System.out.println("2. Injected UserService " + userService);
-        System.out.println("3. Injected UserService " + userService2("2")); // Не трігерне вивід з userService2(...), бо бін уже створений і проксі не запустить реальний метод.
+        log.info("2. Injected UserService " + userService);
+        log.info("3. Injected UserService " + userService2("2")); // Не трігерне вивід з userService2(...), бо бін уже створений і проксі не запустить реальний метод.
         return new UnitService();
     }
 }
+
