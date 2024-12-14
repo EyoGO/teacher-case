@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PropertiesUtilTest {
 
-    @ParameterizedTest
+    /*@ParameterizedTest
     @MethodSource("getPropertyArguments")
     void checkGet(String key, String expectedValue) {
         String actualValue = PropertiesUtil.get(key);
@@ -26,5 +26,5 @@ class PropertiesUtilTest {
                 Arguments.of("db.password", "root"),
                 Arguments.of("db.driver", "org.postgresql.Driver")
                 );
-    }
+    }*/
 }

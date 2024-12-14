@@ -8,6 +8,8 @@ import com.eyogo.http.dto.GetUnitDto;
 import com.eyogo.http.entity.Activity;
 import com.eyogo.http.entity.Unit;
 import com.eyogo.http.mapper.GetUserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,9 +23,15 @@ public class UnitService {
 
     private static final UnitService INSTANCE = new UnitService();
 
-    private final UnitDao unitDao = UnitDao.getInstance();
+    private UnitDao unitDao = UnitDao.getInstance();
 
+    //TODO Deprecated
     public UnitService() {
+    }
+
+    @Autowired
+    public UnitService(UnitDao unitDao) {
+        this.unitDao = unitDao;
     }
 
     public List<GetUnitDto> findAll() {

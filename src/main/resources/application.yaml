@@ -28,3 +28,11 @@ image:
 test:
   full:
     message: ${db.schema} AHAHA
+
+logging:
+  level:
+    root: OFF
+    com.eyogo.http.ApplicationRunner: INFO
+  file:
+    name: eyo.log
+    path: /

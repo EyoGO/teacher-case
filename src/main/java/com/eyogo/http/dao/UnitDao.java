@@ -3,6 +3,7 @@ package com.eyogo.http.dao;
 import com.eyogo.http.entity.Activity;
 import com.eyogo.http.entity.Unit;
 import com.eyogo.http.util.ConnectionManager;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class UnitDao implements Dao<Integer, Unit> {
 
     private static final UnitDao INSTANCE = new UnitDao();
