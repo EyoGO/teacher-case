@@ -18,7 +18,7 @@ public class ImageService {
 
     private static final ImageService INSTANCE = new ImageService();
 
-    private final String basePath = PropertiesUtil.get("image.base.url");
+    private final String basePath = "/"; //PropertiesUtil.get("image.base.url");
 
     @SneakyThrows
     public String upload(String imagePath, InputStream imageContent) {

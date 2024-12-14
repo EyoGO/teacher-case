@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class UnitServiceTest {
+    public static final int ID = 3;
 
     @Mock
     private UnitDao unitDao;
@@ -30,17 +31,17 @@ class UnitServiceTest {
 
     @Test
     void findById() {
-        Mockito.doReturn(Optional.of(new Unit(3, "UnitName", 1, false)))
-                .when(unitDao).findById(3);
+        Mockito.doReturn(Optional.of(new Unit(ID, "UnitName", 1, false)))
+                .when(unitDao).findById(ID);
 
-        Optional<GetUnitDto> actualResult = unitService.findById(3);
+        Optional<GetUnitDto> actualResult = unitService.findById(ID);
 
         Assertions.assertTrue(actualResult.isPresent());
 
-        GetUnitDto expected = GetUnitDto.builder().id(3).name("UnitName").managedByAdmin(false).build();
+        GetUnitDto expected = GetUnitDto.builder().id(ID).name("UnitName").managedByAdmin(false).build();
         actualResult.ifPresent(actual -> Assertions.assertEquals(expected, actual));
 
-        Mockito.verify(unitDao, Mockito.times(1)).findById(3);
+        Mockito.verify(unitDao, Mockito.times(1)).findById(ID);
         Mockito.verifyNoMoreInteractions(unitDao);
     }
 }

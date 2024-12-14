@@ -20,19 +20,20 @@ public class ConnectionManager {
     }
 
     private static void loadDriver() {
-        try {
-            Class.forName(PropertiesUtil.get(DRIVER_KEY));
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            Class.forName(PropertiesUtil.get(DRIVER_KEY));
+//        } catch (ClassNotFoundException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     @SneakyThrows
     public static Connection get() {
-        return DriverManager.getConnection(//TODO       &        in case it was not first parameter, SHOULD fix
-                PropertiesUtil.get(URL_KEY).concat("?").concat("currentSchema=").concat(PropertiesUtil.get(SCHEMA_KEY)),
-                PropertiesUtil.get(USER_KEY),
-                PropertiesUtil.get(PASSWORD_KEY)
-        );
+        return null;
+//        return DriverManager.getConnection(//TODO       &        in case it was not first parameter, SHOULD fix
+//                PropertiesUtil.get(URL_KEY).concat("?").concat("currentSchema=").concat(PropertiesUtil.get(SCHEMA_KEY)),
+//                PropertiesUtil.get(USER_KEY),
+//                PropertiesUtil.get(PASSWORD_KEY)
+//        );
     }
 }

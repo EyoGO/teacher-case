@@ -74,18 +74,19 @@ public class UnitDao implements Dao<Integer, Unit> {
 
     @Override
     public Optional<Unit> findById(Integer id) {
-        try (Connection connection = ConnectionManager.get();
-             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID)) {
-            preparedStatement.setInt(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return Optional.of(buildUnit(resultSet));
-            }
-            return Optional.empty();
-        } catch (SQLException e) {
-            //TODO
-            throw new RuntimeException(e);
-        }
+//        try (Connection connection = ConnectionManager.get();
+//             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID)) {
+//            preparedStatement.setInt(1, id);
+//            ResultSet resultSet = preparedStatement.executeQuery();
+//            if (resultSet.next()) {
+//                return Optional.of(buildUnit(resultSet));
+//            }
+//            return Optional.empty();
+//        } catch (SQLException e) {
+//            //TODO
+//            throw new RuntimeException(e);
+//        }
+        return Optional.empty();
     }
 
     @Override

@@ -15,7 +15,7 @@ import org.springframework.context.annotation.PropertySource;
 /* Ця анотація обробляється в першу чергу завдяки BFPP ConfigurationClassPostProcessor, який автоматично додається
 завдяки new AnnotationConfigApplicationContext(ApplicationConfiguration.class).
 У випадку ж використання XML і new ClassPathXmlApplicationContext("application.xml") цей BFPP підключається вручну або завдяки <context:annotation-config/>*/
-//@PropertySource("classpath:application.yaml")
+//@PropertySource("classpath:application.properties")
 //@ComponentScan(basePackages = "com.eyogo.http")
 // @Import(MyWebConfig.class) -додає до поточного конфіга вказані тут, як правило вписують те що не скануємо в цьому, але потрібне.
 // @ImportResource("...app.xml") - додає xml конфіг і дає можливість змішувати XML, annotation, java-based
