@@ -1,0 +1,8 @@
+db:
+  pool:
+    size: 12222222
+    timeout: 10
+
+logging:
+  level:
+    org.springframework.test: TRACE
