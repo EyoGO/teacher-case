@@ -39,7 +39,9 @@
         EntityManager (обгортака над конекшнами). Він має свої проперті JpaProperties з префіксом spring.jpa
         Крім цього є @AutoConfiguration after=DataSourceAutoConfiguration - це сортує автоконфігурації й змушує
         поточну запускатись після DataSourceAutoConfiguration.
-        DataSourceAutoConfiguration у свою чергу перевірить чи є -->
+        DataSourceAutoConfiguration своєю чергою перевірить чи є в classpath DataSource - інтерфейс з javax.sql
+        з методом Connection getConnection() і намагатиметься створити пул конекшнів з цього DataSource. Робитиме він
+        це імпортувавши конфіги для різних конекшн пулів: -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
