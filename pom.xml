@@ -22,14 +22,27 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
+    <!--    spring-boot-starter тягнеться транзитивно з усіх стартерів, тому не треба його явно вказувати-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter</artifactId>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+
+
+        <!--Клас автоконфігурації - HibernateJpaAutoConfiguration
+        Він має кондішін он клас HibernateJpaAutoConfiguration - що в Hibernate є EntityManagerFactory та другий
+        EntityManager (обгортака над конекшнами). Він має свої проперті JpaProperties з префіксом spring.jpa
+        Крім цього є @AutoConfiguration after=DataSourceAutoConfiguration - це сортує автоконфігурації й змушує
+        поточну запускатись після DataSourceAutoConfiguration.
+        DataSourceAutoConfiguration у свою чергу перевірить чи є -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
 <!--        <dependency>-->
