@@ -1,15 +1,9 @@
 package com.eyogo.http.service;
 
-import com.eyogo.http.dao.ActivitiyDao;
-import com.eyogo.http.dao.UnitDao;
-import com.eyogo.http.dao.UserDao;
-import com.eyogo.http.dto.GetActivityDto;
+import com.eyogo.http.dao.UnitRepository;
 import com.eyogo.http.dto.GetUnitDto;
-import com.eyogo.http.entity.Activity;
 import com.eyogo.http.entity.Unit;
-import com.eyogo.http.mapper.GetUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,19 +17,20 @@ public class UnitService {
 
     private static final UnitService INSTANCE = new UnitService();
 
-    private UnitDao unitDao = UnitDao.getInstance();
+    @Autowired
+    private UnitRepository unitRepository;
 
     //TODO Deprecated
     public UnitService() {
     }
 
     @Autowired
-    public UnitService(UnitDao unitDao) {
-        this.unitDao = unitDao;
+    public UnitService(UnitRepository unitRepository) {
+        this.unitRepository = unitRepository;
     }
 
     public List<GetUnitDto> findAll() {
-        List<Unit> units = unitDao.findAll();
+        List<Unit> units = unitRepository.findAll();
         List<GetUnitDto> rootUnits = new ArrayList<>();
 
         Map<Integer, List<Unit>> parentIdToUnit = units.stream().collect(Collectors.groupingBy(Unit::getParentId));
@@ -72,7 +67,7 @@ public class UnitService {
     }
 
     public Optional<GetUnitDto> findById(Integer unitId) {
-        Optional<Unit> unitById = unitDao.findById(unitId);
+        Optional<Unit> unitById = unitRepository.findById(unitId);
         return unitById.map(unit -> GetUnitDto.builder()
                 .id(unit.getId())
                 .name(unit.getUnitName())

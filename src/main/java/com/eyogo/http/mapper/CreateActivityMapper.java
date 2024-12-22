@@ -19,7 +19,7 @@ public class CreateActivityMapper implements Mapper<CreateActivityDto, Activity>
     public Activity mapFrom(CreateActivityDto object) {
         return Activity.builder()
                 .userId(object.getUserId())
-                .unitId(object.getUnitId() != null ? Integer.valueOf(object.getUnitId()) : null)
+//                .uniT(object.getUnitId() != null ? Integer.valueOf(object.getUnitId()) : null)
                 .activityName(object.getActivityName())
                 .description(object.getDescription())
                 .authorId(object.getAuthorId())

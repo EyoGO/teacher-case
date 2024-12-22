@@ -146,7 +146,7 @@ public class ActivitiyDao implements Dao<Integer, Activity> {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
             preparedStatement.setObject(1, entity.getUserId());
-            preparedStatement.setObject(2, entity.getUnitId());
+            preparedStatement.setObject(2, entity.getUnit().getId());
             preparedStatement.setObject(3, entity.getActivityName());
             preparedStatement.setObject(4, entity.getDescription());
             preparedStatement.setObject(5, entity.getAuthorId());
@@ -162,7 +162,7 @@ public class ActivitiyDao implements Dao<Integer, Activity> {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setObject(1, entity.getUserId());
-            preparedStatement.setObject(2, entity.getUnitId());
+            preparedStatement.setObject(2, entity.getUnit().getId());
             preparedStatement.setObject(3, entity.getActivityName());
             preparedStatement.setObject(4, entity.getDescription());
             preparedStatement.setObject(5, entity.getAuthorId());
@@ -180,7 +180,7 @@ public class ActivitiyDao implements Dao<Integer, Activity> {
         return new Activity(
                 resultSet.getObject("id", Integer.class),
                 resultSet.getObject("user_id", Integer.class),
-                resultSet.getObject("unit_id", Integer.class),
+                /*resultSet.getObject("unit_id", Integer.class)*/ null,
                 resultSet.getObject("activity_name", String.class),
                 resultSet.getObject("description", String.class),
                 resultSet.getObject("author_id", Integer.class)

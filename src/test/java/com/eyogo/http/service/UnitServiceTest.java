@@ -1,6 +1,6 @@
 package com.eyogo.http.service;
 
-import com.eyogo.http.dao.UnitDao;
+import com.eyogo.http.dao.UnitRepository;
 import com.eyogo.http.dto.GetUnitDto;
 import com.eyogo.http.entity.Unit;
 import org.junit.jupiter.api.Assertions;
@@ -10,18 +10,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.util.Assert;
 
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class UnitServiceTest {
     public static final int ID = 3;
 
     @Mock
-    private UnitDao unitDao;
+    private UnitRepository unitDao;
     @InjectMocks
     private UnitService unitService;
 

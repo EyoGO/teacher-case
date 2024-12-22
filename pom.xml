@@ -34,43 +34,95 @@
         </dependency>
 
 
-        <!--Клас автоконфігурації - HibernateJpaAutoConfiguration
-        Він має кондішін он клас HibernateJpaAutoConfiguration - що в Hibernate є EntityManagerFactory та другий
+<!--        Spring Data JPA надає нам 3 основні бонуси - автоконфігурацію (1), роботу з транзакціями (2), роботу з DAO (3):-->
+
+        <!--(1) Клас автоконфігурації - HibernateJpaAutoConfiguration
+        Він має кондішн он клас HibernateJpaAutoConfiguration - що в Hibernate є EntityManagerFactory та другий
         EntityManager (обгортака над конекшнами). Він має свої проперті JpaProperties з префіксом spring.jpa
         Крім цього є @AutoConfiguration after=DataSourceAutoConfiguration - це сортує автоконфігурації й змушує
         поточну запускатись після DataSourceAutoConfiguration.
         DataSourceAutoConfiguration своєю чергою перевірить чи є в classpath DataSource - інтерфейс з javax.sql
-        з методом Connection getConnection() і намагатиметься створити пул конекшнів з цього DataSource. Робитиме він
-        це імпортувавши конфіги для різних конекшн пулів: -->
+        з методом Connection getConnection() і намагатиметься створити пул конекшнів цього DataSource. Робитиме він
+        це імпортувавши конфіги для різних конекшн пулів: Hikari, Tomcat,... У кожному з них умова
+        на classpath відповідного класу ...Hikari... і відсутності біна DataSource.
+
+        Тобто маємо окремо проперті 2 автоконфігів - DataSourceAutoConfiguration spring.datasource для конекшн пула
+        HibernateJpaAutoConfiguration spring.jpa для JPA
+        По дефолту юзатиметься Hikari pool-->
+
+<!--        2) Для транзакцій існує TransactionManager, який конфігурцється в JpaBaseConfiguration
+Його можна використовувати 2 способами - вручну через TransactionTemplate відкривати закривати та через
+анотацію @Transactional (працює лише для public) (спрінговою, тобто не з javax.transaction). Без додавання над інтеграційним тестом @Transactional
+на сутностях, наприклад entityManager.find(Activity.class, 1) буде проксі всередині ні залежну сутність які викидатимуть
+LazyInitializationException, тому що на операцію find відкривається транзакція й закривається, а з нею сесія, яка відповідальна
+за витягування проксі. Завдяки @Transactional в тестах додається TransactionalTestExecutionListener який має методи beforeTestMethod
+та afterTestMethod. before визначає TransactionManager методом getTransactionManager(...) ЦЕ КРАЩЕ В ДЕБАЗІ ГЛЯНУТИ САМОМУ.
+Крім цього, перед запуском методу цей лістенер запускає @BeforeTransaction та @AfterTransaction методи - нові цикли для JUnit.
+
+Для транзакцій є свій автоконфігуратор TransactionAutoConfiguration - там опис який підхід проксі буде використаний.
+Потрібно уявляти ще ситуацію з CGLib proxy для транзакцій - вони обгортають методи. АЛЕ якщо один метод, наприклад нашого @Transactional
+сервісу викликає інший метод, то транзакція для викликаного методу не запуститься, бо ми працюємо в цьому випадку в рамках не проксі,
+а нашого сервісу й ніяких додаткових обробок не буде. Проте, якщо наш метод викликає метод іншого сервіса (який уже є проксі), тоді
+ми викличемо проксі метод, але по дефолту транзакція не відкривається і не закривається, бо відкриття і закриття йде від зовнішнього метода,
+всі інші тільки відстежувати чи була відкрита і якщо не була то відкриють транзакцію. Саме на такій взаємодії проксі будується PROPAGATION
+стратегія.
+
+@Transactional має багато налаштувань
+-value/transactionManager - можна додати багато transaction managerів, але як правило 1
+-propagation -  Propagation.REQUIRED (default) - проксі не бачить транзакцію - відкриває
+                Propagation.SUPPORTS - немає транзакцій - не відкривай (нічого не робить)
+                Propagation.MANDATORY - не бачить транзакцію - кидає ексепшн, тобто теж відкривати не вміє
+                Propagation.REQUIRES_NEW - завжди відкриває нову транзакцію (новий конекшн і нова сесія з кешем)
+                            якщо внутрішній метод помітити цим, то він відкриє нову транзакцію, а той хто викликав його чекатиме
+                            виконання, але для виконання треба з пула дістати нову транзакцію (конекшн з пула, що може привести до дедлоків),
+                            тому що не можна відкрити декілька транзакцій в одному з'єднанні. І тут на новий конекшн буде нова сесія і новий кеш для сесії.
+                Propagation.NOT_SUPPORTED - виконується завжди поза транзакцією, якщо транзакція була - зупини її (тільки коли треба, щоб не ролбекнувся результат при exception)
+                Propagation.NEVER - поза транзакціями, якщо відкрита кидає exception
+                Propagation.NESTED - тільки для JDBC, бо використовує savePoint() - все що зберегли закомітиться.
+-isolation - рівень ізоляції, виставляється в момент створення, тобто якщо внутрішні виклики проксі юзають зовнішню транзакцію, то і ізоляція з зовнішньої
+-readonly - якщо немає зміни даних, то це оптимізація 1) на рівні бази даних, 2) на рівні java (не відбувається flush сесії)
+-rollbackFor - при яких exception робити роллбек (по дефолту RuntimeException, Error, вручну треба вказувати checked)
+-->
+
+
+<!--        3) Появляється зручна робота з репозиторіями. Не потрібно самому писати DAO, а достатньо успадкувати нащ інтерфейс
+UnitRepository від Repository інтерфейсу. Спрінг скануватиме такі класи й автогенеруватиме для них код на основі імен (делі детальніше).
+АЛЕ репозиторії працюють і без Spring BOOT, він просто дає нам автоконфігурацію JpaRepositoriesAutoConfiguration (він імпортить ще JpaRepositoriesImportSelector),
+яка автоматично енейблить репозиторії та багато іншого, як от реєстрація репозіторі інтерфейсів і створення бін дефінішнів на основі репозіторі,
+які після життєвого циклу створиться шар репозіторі. Якби не було автоконфігурації (BOOT), то треба було б використовувати
+@EnableJpaRepositories(в якому пакети репозіторі, як найменувати, які реалізації, ...). детальніше дивитись в JpaRepositoriesImportSelector, а в ньому в ...Registrar.
+
+-->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.springframework</groupId>-->
-<!--            <artifactId>spring-core</artifactId>-->
-<!--            <version>6.1.13</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework</groupId>-->
-<!--            <artifactId>spring-context</artifactId>-->
-<!--            <version>6.1.13</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>jakarta.annotation</groupId>-->
-<!--            <artifactId>jakarta.annotation-api</artifactId>-->
-<!--            <version>2.1.1</version>-->
-<!--        </dependency>-->
+<!--        This is an advanced auditing dependency (default holds fields modifiedBy createdAt... in AuditingEntity)
+        Envers works like GIT, it has revision Entity and has Date of revision and ID of revision, revision itself contains info about what data was changed.
+        For this create Revision entity.-->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-envers</artifactId>
+        </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>jakarta.servlet</groupId>-->
-<!--            <artifactId>jakarta.servlet-api</artifactId>-->
-<!--            <version>6.0.0</version>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>jakarta.servlet.jsp.jstl</groupId>
@@ -86,40 +138,11 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.2.27</version>
-<!--            <scope>runtime</scope>-->
-        </dependency>
-
-        <!--<dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.9.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <version>5.9.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>3.24.2</version>
-            <scope>test</scope>
-        </dependency>-->
-
-
 
         <dependency>
             <groupId>org.apache.commons</groupId>

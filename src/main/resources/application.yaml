@@ -6,7 +6,6 @@ db:
   user: postgres
   password: root
   url: jdbc:postgresql://localhost:5432/postgres
-  schema: teacher-case
 
   pool:
     size: 12
@@ -27,12 +26,26 @@ image:
     url: D:/Software/Tools/javaWorkspace/teacher-case/images
 test:
   full:
-    message: ${db.schema} AHAHA
+    message: ${db.driver} AHAHA
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties.hibernate:
+      show_sql: true
+      format_sql: true
+      hbm2ddl: validate
+#      default_schema: teacher-case
+
 
 logging:
   level:
-    root: OFF
-    com.eyogo.http.ApplicationRunner: INFO
+    root: INFO
+    com.eyogo.http.ApplicationRunner: INFO #OFF
   file:
     name: eyo.log
     path: /
