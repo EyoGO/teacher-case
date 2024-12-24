@@ -1,20 +1,13 @@
 package com.eyogo.http.dao;
 
-import com.eyogo.http.dto.GetUserDto;
 import com.eyogo.http.dto.GetUserDto2;
-import com.eyogo.http.entity.Gender;
 import com.eyogo.http.entity.Role;
 import com.eyogo.http.entity.User;
-import com.eyogo.http.util.ConnectionManager;
-import lombok.SneakyThrows;
+import com.eyogo.http.projection.UserNameProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.history.RevisionRepository;
-import org.springframework.data.repository.query.Param;
 
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +31,15 @@ public interface UserRepository extends
 
     Optional<User> findByEmailAndPassword(String email, String password);
 
+    @Query("""
+        select
+            u.id as id,
+            u.firstName as firstName,
+            u.lastName as lastName
+        FROM User u
+        """)
+    List<UserNameProjection> findAllNames();
+
     // Projections select only requested by DTO data:
 //    Optional<GetUserDto> findById(Integer id);
 
@@ -53,7 +55,7 @@ public interface UserRepository extends
                    "last_name, " +
                    "email, " +
                    "birthday as birthDate " +
-                   "FROM {h-schema}users " +
+                   "FROM users " +
                    "WHERE role = :#{#role.name()}",
             nativeQuery = true)
     List<GetUserDto2> findAllByRole(Role role);

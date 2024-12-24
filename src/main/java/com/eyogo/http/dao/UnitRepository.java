@@ -34,7 +34,7 @@ public interface UnitRepository extends JpaRepository<Unit, Integer> {
 
     List<Unit> findAllByParentId(Integer parentId);
 
-    List<Unit> findAll();
+//    List<Unit> findAll();
 
     void delete(Unit unit);
 

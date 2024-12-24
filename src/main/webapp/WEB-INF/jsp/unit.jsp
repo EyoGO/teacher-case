@@ -40,7 +40,7 @@
             <label for="userSelector">Виберіть користувача:</label>
             <select name="userToWatch" id="userSelector">
                 <c:forEach var="user" items="${requestScope.get(\"usersSelection\")}">
-                    <option value="${user.id}" ${user.id.equals(sessionScope.selectedUserId) ? "selected=\"selected\"" : ""}>${user.firstName} ${user.lastName}</option>
+                    <option value="${user.id}" ${user.id.equals(sessionScope.selectedUserId) ? "selected=\"selected\"" : ""}>${user.fullName}</option>
                 </c:forEach>
             </select>
         </c:if>

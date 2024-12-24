@@ -7,9 +7,11 @@ import com.eyogo.http.entity.User;
 import com.eyogo.http.exception.ValidationException;
 import com.eyogo.http.mapper.CreateUserMapper;
 import com.eyogo.http.mapper.GetUserMapper;
+import com.eyogo.http.projection.UserNameProjection;
 import com.eyogo.http.validation.CreateUserValidator;
 import com.eyogo.http.validation.ValidationResult;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +23,7 @@ public class UserService {
 
     private static final UserService INSTANCE = new UserService();
 
+    @Autowired
     private UserRepository userRepository;
     private final GetUserMapper getUserMapper = GetUserMapper.getInstance();
     private final CreateUserValidator createUserValidator = CreateUserValidator.getInstance();
@@ -62,6 +65,10 @@ public class UserService {
 //                .map(getUserMapper::mapFrom);
 //        return userRepository.findById(id);
         return null;
+    }
+
+    public List<UserNameProjection> findAllNames() {
+        return userRepository.findAllNames();
     }
 
     public static UserService getInstance() {
