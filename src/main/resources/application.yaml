@@ -40,6 +40,10 @@ spring:
       format_sql: true
       hbm2ddl: validate
 #      default_schema: teacher-case
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
 
 
 logging:

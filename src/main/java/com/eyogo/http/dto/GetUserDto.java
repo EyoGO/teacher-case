@@ -38,7 +38,7 @@ public final class GetUserDto {
         }
     }
 
-    GetUserDto(Integer id, String firstName, String lastName, String email, LocalDate birthday, String image, Role role, Gender gender) {
+    public GetUserDto(Integer id, String firstName, String lastName, String email, LocalDate birthday, String image, Role role, Gender gender) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;

@@ -23,10 +23,10 @@
 
     <dependencies>
     <!--    spring-boot-starter тягнеться транзитивно з усіх стартерів, тому не треба його явно вказувати-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter</artifactId>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-starter</artifactId>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -97,6 +97,27 @@ UnitRepository від Repository інтерфейсу. Спрінг сканув
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!--        Enables autoconfiguration WebMvcAutoConfiguration that gives server, spring.mvc, spring.web properties and starts.
+                    Take a look at DispatcherServlet lesson and @RequestMapping. (DispatcherServlet.doDispatch()) non daemon thread for embedded tomcat.-->
+
+        <!-- Now application is started using WebApplicationContext
+        Start from flow: HTTP request comes to DispatcherServlet, where it defines a mappedHandler - controller (they also have interceptors around),
+         then handlerAdapter (argument resolver, return value handler,...) is found. Then handlerAdapter handles
+         input request and returns ModelAndView, which is rendered or just returned in case view is null (@RestController).
+         Besides that it handles all Exceptions and stores them to process further using Exception resolvers.-->
+
+        <!--        So we have 3 layers - Controller, Model, View. We will start without Model:
+                There will be controller that handles http request by some path and returns a page (view, for JSP added Jasper dependency).
+                We can set default prefix and postfix to specify location of our views and extensions using spring.-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId><!-- required for JSP because embedded by default has Coyote and Catalina, but not Jasper -->
+            <artifactId>tomcat-embed-jasper</artifactId>
         </dependency>
 
 <!--        This is an advanced auditing dependency (default holds fields modifiedBy createdAt... in AuditingEntity)
