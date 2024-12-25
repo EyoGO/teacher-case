@@ -19,7 +19,7 @@
 </head>
 <body>
 <%@include file="header.jsp" %>
-<a href="${pageContext.request.contextPath}/unit">⇦</a>
+<a href="${pageContext.request.contextPath}/units">⇦</a>
 <h1>${sessionScope.unit.name}</h1>
 <h2>Список активностей:</h2>
 
@@ -39,7 +39,7 @@
                 </td>
                 <td class="activityTableDataWithButton">
                     <form onSubmit="if(!confirm('Дійсно видалити запис з назвою ${activity.name}?')){return false;}"
-                          action="${pageContext.request.contextPath}/activity?id=${activity.id}&action=delete"
+                          action="${pageContext.request.contextPath}/activities?activityId=${activity.id}&action=delete"
                           method="post">
                         <input type="submit" name="delete" value="Видалити"/>
                     </form>
@@ -58,10 +58,10 @@
                         <span class="close" id="closePopup">&times;</span>
                         <h2 id="popupHeading">Додавання активності</h2>
                         <form id="popupForm"
-                              action="${pageContext.request.contextPath}/activity?unit-id=${param.get("unit-id")}&action=add"
+                              action="${pageContext.request.contextPath}/activities?unit-id=${param.get("unit-id")}&action=add"
                               method="post">
                             <label for="name">Назва активності:</label>
-                            <input type="text" id="name" name="name" required>
+                            <input type="text" id="name" name="activityName" required>
                             <br>
                             <textarea id="basic-example" name="description"></textarea>
                             <button type="submit">Submit</button>
@@ -73,7 +73,7 @@
                         tinymce.get('basic-example').setContent(``);
                         document.getElementById("popupHeading").innerText = `Додавання активності`;
                         document.getElementById("name").value = ``;
-                        document.getElementById("popupForm").action = `${pageContext.request.contextPath}/activity?unit-id=${param.get("unit-id")}&action=add`;
+                        document.getElementById("popupForm").action = `${pageContext.request.contextPath}/activities?unit-id=${param.get("unit-id")}&action=add`;
                         document.getElementById("popup").style.display = "block";
                     });
 
@@ -96,11 +96,17 @@
                     function setUpdateFormValues(activityId, activityName) {
                         fetchRecordData(activityId)
                             .then(recordData => {
-                                tinymce.get('basic-example').setContent(recordData.value.description);
+                                console.log(recordData);
+                                tinymce.get('basic-example').setContent(recordData.description);
+                                console.log('1');
                                 document.getElementById("popupHeading").innerText = `Редагування активності`;
+                                console.log('2');
                                 document.getElementById("name").value = activityName;
-                                document.getElementById("popupForm").action = `${pageContext.request.contextPath}/activity?unit-id=${param.get("unit-id")}&action=update&id=` + activityId;
+                                console.log('3');
+                                document.getElementById("popupForm").action = `${pageContext.request.contextPath}/activities?unit-id=${param.get("unit-id")}&action=update&activityId=` + activityId;
+                                console.log('4');
                                 document.getElementById("popup").style.display = "block";
+                                console.log('5');
                             })
                             .catch(error => {
                                 console.error('Error loading record for edit:', error);
@@ -109,7 +115,7 @@
 
                     function fetchRecordData(recordId) {
                         // Perform an AJAX request to fetch the record data
-                        return fetch(`${pageContext.request.contextPath}/activity?id=` + recordId, {
+                        return fetch(`${pageContext.request.contextPath}/activities/` + recordId, {
                             method: 'GET',
                             headers: {
                                 'Accept': 'application/json',
@@ -119,6 +125,7 @@
                                 if (!response.ok) {
                                     throw new Error(`Failed to fetch record data for record ID ` + recordId);
                                 }
+                                console.log(response)
                                 return response.json();
                             });
                     }

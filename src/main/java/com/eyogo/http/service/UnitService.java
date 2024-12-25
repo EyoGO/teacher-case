@@ -3,6 +3,7 @@ package com.eyogo.http.service;
 import com.eyogo.http.dao.UnitRepository;
 import com.eyogo.http.dto.GetUnitDto;
 import com.eyogo.http.entity.Unit;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -66,14 +67,15 @@ public class UnitService {
         return descendants;
     }
 
-    public Optional<GetUnitDto> findById(Integer unitId) {
+    public GetUnitDto findById(Integer unitId) {
         Optional<Unit> unitById = unitRepository.findById(unitId);
         return unitById.map(unit -> GetUnitDto.builder()
                 .id(unit.getId())
                 .name(unit.getUnitName())
                 .descendants(null)//TODO consider this, maybe need new DTO
                 .managedByAdmin(unit.getManagedByAdmin())
-                .build());
+                .build())
+                .orElseThrow(() -> new EntityNotFoundException("Unit not found."));
     }
 
     public static UnitService getInstance() {

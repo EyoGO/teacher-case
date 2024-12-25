@@ -6,8 +6,6 @@ import com.eyogo.http.entity.Role;
 import com.eyogo.http.entity.User;
 import com.eyogo.http.util.LocalDateFormatter;
 
-import java.io.File;
-
 public class CreateUserMapper implements Mapper<CreateUserDto, User> {
 
     public static final String IMAGE_FOLDER = "users";
@@ -21,7 +19,7 @@ public class CreateUserMapper implements Mapper<CreateUserDto, User> {
                 .email(object.getEmail())
                 .password(object.getPassword())
                 .birthday(LocalDateFormatter.format(object.getBirthday()))
-                .image(IMAGE_FOLDER + File.separator + object.getEmail() + "_" + object.getImage().getSubmittedFileName())
+//                .image(IMAGE_FOLDER + File.separator + object.getEmail() + "_" + object.getImage().getName()) //TODO images processing
                 .role(Role.valueOf(object.getRole()))
                 .gender(Gender.valueOf(object.getGender()))
                 .build();

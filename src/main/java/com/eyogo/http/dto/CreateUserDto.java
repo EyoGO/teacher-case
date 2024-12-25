@@ -1,6 +1,5 @@
 package com.eyogo.http.dto;
 
-import jakarta.servlet.http.Part;
 import lombok.Builder;
 import lombok.Value;
 
@@ -13,7 +12,7 @@ public class CreateUserDto {
     String email;
     String password;
     String birthday;
-    Part image;
+//    Part image; // TODO image processing
     String role;
     String gender;
 }

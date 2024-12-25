@@ -7,7 +7,7 @@
     <div>
         <img src="${pageContext.request.contextPath}/photo.jpg" class="headerImg">
     </div>
-    <c:if test="${not empty sessionScope.user}">
+    <c:if test="${not empty sessionScope.user}"> <%--TODO maybe add everywhere till normal solution added --%>
         <ul class="menu">
             <c:if test="${sessionScope.user.role == (Role.ADMIN)}">
                 <li>

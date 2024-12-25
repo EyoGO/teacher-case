@@ -3,15 +3,15 @@
 --changeset eyogo:1
 CREATE TABLE IF NOT EXISTS revision
 (
-    id SERIAL PRIMARY KEY,
+    id        SERIAL PRIMARY KEY,
     timestamp BIGINT NOT NULL
 );
 
 --changeset eyogo:2
 CREATE TABLE IF NOT EXISTS users_aud
 (
-    id BIGINT,
-    rev INT REFERENCES revision (id),
+    id         BIGINT,
+    rev        INT REFERENCES revision (id),
     revtype    SMALLINT,
     first_name VARCHAR(124),
     last_name  VARCHAR(124),
@@ -21,5 +21,31 @@ CREATE TABLE IF NOT EXISTS users_aud
     birthday   DATE,
     image      VARCHAR(124),
     gender     VARCHAR(16),
+    PRIMARY KEY (rev, id)
+);
+
+--changeset eyogo:3
+CREATE TABLE IF NOT EXISTS unit_aud
+(
+    id               BIGINT,
+    rev              INT REFERENCES revision (id),
+    revtype          SMALLINT,
+    unit_name        VARCHAR,
+    parent_id        SMALLINT,
+    managed_by_admin BOOLEAN,
+    PRIMARY KEY (rev, id)
+);
+
+--changeset eyogo:4
+CREATE TABLE IF NOT EXISTS activity_aud
+(
+    id            BIGINT,
+    rev           INT REFERENCES revision (id),
+    revtype       SMALLINT,
+    user_id       INTEGER,
+    unit_id       SMALLINT,
+    activity_name VARCHAR,
+    description   VARCHAR,
+    author_id     INTEGER,
     PRIMARY KEY (rev, id)
 );

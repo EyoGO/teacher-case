@@ -33,25 +33,25 @@ public class RegistrationServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        CreateUserDto userDto = CreateUserDto.builder()
-                .firstName(req.getParameter("firstName"))
-                .lastName(req.getParameter("lastName"))
-                .image(req.getPart("image"))
-                .birthday(req.getParameter("birthday"))
-                .email(req.getParameter("email"))
-                .password(req.getParameter("password"))
-                .role(req.getParameter("role"))
-                .gender(req.getParameter("gender"))
-                .build();
-
-
-        try {
-            userService.create(userDto);
-            resp.sendRedirect(req.getContextPath() + "/unit");
-        } catch (ValidationException exception) {
-            req.setAttribute("errors", exception.getErrors());
-            doGet(req, resp);
-        }
+//        CreateUserDto userDto = CreateUserDto.builder()
+//                .firstName(req.getParameter("firstName"))
+//                .lastName(req.getParameter("lastName"))
+//                .image(req.getPart("image"))
+//                .birthday(req.getParameter("birthday"))
+//                .email(req.getParameter("email"))
+//                .password(req.getParameter("password"))
+//                .role(req.getParameter("role"))
+//                .gender(req.getParameter("gender"))
+//                .build();
+//
+//
+//        try {
+//            userService.create(userDto);
+//            resp.sendRedirect(req.getContextPath() + "/unit");
+//        } catch (ValidationException exception) {
+//            req.setAttribute("errors", exception.getErrors());
+//            doGet(req, resp);
+//        }
     }
 }
 

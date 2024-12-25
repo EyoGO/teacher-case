@@ -1,5 +1,7 @@
 package com.eyogo.http.controller;
 
+import com.eyogo.http.dto.GetUserDto;
+import com.eyogo.http.entity.Role;
 import com.eyogo.http.service.UnitService;
 import com.eyogo.http.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/units")
-@SessionAttributes({"useCascade"})
+@SessionAttributes({"useCascade", "selectedUserId"})
 @RequiredArgsConstructor
 public class UnitController {
 
@@ -29,8 +31,21 @@ public class UnitController {
         return "singleunit";
     }
 
-    // TODO remove it
-//    @PostMapping
-//    public String save(@ModelAttribute("unit") Unit unit) {
-//    }
+    // TODO remove it and at least create separate requests
+    @PostMapping
+    public String post(Model model,
+                       @SessionAttribute GetUserDto user,
+                       @RequestParam(required = false) Integer userToWatch,
+                       @RequestParam(required = false) Boolean useCascade) {
+        if (user.getRole().equals(Role.ADMIN)) {
+            if (userToWatch != null) {
+                model.addAttribute("selectedUserId", userToWatch);
+            }
+        }
+
+        if (useCascade != null) {
+            model.addAttribute("useCascade", useCascade);
+        }
+        return "redirect:/units";
+    }
 }

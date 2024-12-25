@@ -48,7 +48,7 @@ public class UserService {
         //map to entity
         User userEntity = createUserMapper.mapFrom(userDto);
         //saved entity to DAO
-        imageService.upload(userEntity.getImage(), userDto.getImage().getInputStream());
+//        imageService.upload(userEntity.getImage(), userDto.getImage().getInputStream()); // TODO image processing
         userRepository.save(userEntity);
         // return id
         return userEntity.getId();

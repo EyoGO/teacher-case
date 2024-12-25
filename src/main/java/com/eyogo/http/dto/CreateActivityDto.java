@@ -7,7 +7,7 @@ import lombok.Value;
 @Builder
 public class CreateActivityDto {
     Integer userId;
-    String unitId;
+    Integer unitId;
     String activityName;
     String description;
     Integer authorId;

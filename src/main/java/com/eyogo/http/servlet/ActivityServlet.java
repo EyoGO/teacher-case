@@ -31,7 +31,7 @@ public class ActivityServlet extends HttpServlet {
         String id = req.getParameter("id");
         if (StringUtils.isNotBlank(id)) {
             int i = Integer.parseInt(id);
-            Optional<GetActivityDto> getActivityDto = activityService.findStrictedDataById(i);
+            GetActivityDto getActivityDto = activityService.findStrictedDataById(i);
             String json = new Gson().toJson(getActivityDto);//TODO what if empty
             PrintWriter out = resp.getWriter();
             resp.setContentType("application/json");
@@ -48,8 +48,8 @@ public class ActivityServlet extends HttpServlet {
                 unitId = Integer.parseInt(unitIdString);
             }
 
-            Optional<GetUnitDto> unitDtoOptional = unitService.findById(unitId);
-            req.getSession().setAttribute("unit", unitDtoOptional.get());//TODO what if not found
+            GetUnitDto unitDto = unitService.findById(unitId);
+            req.getSession().setAttribute("unit", unitDto);
 
             //TODO add ability not to specify unit to get all User's activities
             //TODO Consider 2 alternatives: either IF here and when 0 - call another method or pass 0 as parameter and handle it in service
@@ -62,45 +62,45 @@ public class ActivityServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (req.getParameter("action").equals("add")) {//TODO can add/delete through POST request to other users. need to restrict like in JSP
-            Integer selectedUserId = (Integer) req.getSession().getAttribute("selectedUserId");
-            Integer authorId = ((GetUserDto) req.getSession().getAttribute("user")).getId();
-            CreateActivityDto activityDto = CreateActivityDto.builder()
-                    .userId(selectedUserId)
-                    .unitId(req.getParameter("unit-id"))
-                    .activityName(req.getParameter("name"))
-                    .description(req.getParameter("description"))
-                    .authorId(authorId)
-                    .build();
-            try {
-                activityService.create(activityDto);
-                resp.sendRedirect(req.getContextPath() + "/activity?unit-id=" + ((GetUnitDto) req.getSession().getAttribute("unit")).getId());
-            } catch (ValidationException exception) {
-                req.setAttribute("errors", exception.getErrors());
-                doGet(req, resp);
-            }
-        } else if (req.getParameter("action").equals("delete")) {
-            String activityIdParameter = req.getParameter("id");
-            Integer activityId = Integer.valueOf(activityIdParameter);
-            activityService.delete(activityId);
-            resp.sendRedirect(req.getContextPath() + "/activity?unit-id=" + ((GetUnitDto) req.getSession().getAttribute("unit")).getId());
-        } else if (req.getParameter("action").equals("update")) {
-            String activityIdParameter = req.getParameter("id");
-            Integer activityId = Integer.valueOf(activityIdParameter);
-            CreateActivityDto activityDto = CreateActivityDto.builder()//TODO should update users or only data fields?
+//        if (req.getParameter("action").equals("add")) {//TODO can add/delete through POST request to other users. need to restrict like in JSP
+//            Integer selectedUserId = (Integer) req.getSession().getAttribute("selectedUserId");
+//            Integer authorId = ((GetUserDto) req.getSession().getAttribute("user")).getId();
+//            CreateActivityDto activityDto = CreateActivityDto.builder()
 //                    .userId(selectedUserId)
 //                    .unitId(req.getParameter("unit-id"))
-                    .activityName(req.getParameter("name"))
-                    .description(req.getParameter("description"))
+//                    .activityName(req.getParameter("name"))
+//                    .description(req.getParameter("description"))
 //                    .authorId(authorId)
-                    .build();
-            try {
-                activityService.update(activityId, activityDto);
-                resp.sendRedirect(req.getContextPath() + "/activity?unit-id=" + ((GetUnitDto) req.getSession().getAttribute("unit")).getId());
-            } catch (ValidationException exception) {
-                req.setAttribute("errors", exception.getErrors());
-                doGet(req, resp);
-            }
-        }
+//                    .build();
+//            try {
+//                activityService.create(activityDto);
+//                resp.sendRedirect(req.getContextPath() + "/activity?unit-id=" + ((GetUnitDto) req.getSession().getAttribute("unit")).getId());
+//            } catch (ValidationException exception) {
+//                req.setAttribute("errors", exception.getErrors());
+//                doGet(req, resp);
+//            }
+//        } else if (req.getParameter("action").equals("delete")) {
+//            String activityIdParameter = req.getParameter("id");
+//            Integer activityId = Integer.valueOf(activityIdParameter);
+//            activityService.delete(activityId);
+//            resp.sendRedirect(req.getContextPath() + "/activity?unit-id=" + ((GetUnitDto) req.getSession().getAttribute("unit")).getId());
+//        } else if (req.getParameter("action").equals("update")) {
+//            String activityIdParameter = req.getParameter("id");
+//            Integer activityId = Integer.valueOf(activityIdParameter);
+//            CreateActivityDto activityDto = CreateActivityDto.builder()//TODO should update users or only data fields?
+////                    .userId(selectedUserId)
+////                    .unitId(req.getParameter("unit-id"))
+//                    .activityName(req.getParameter("name"))
+//                    .description(req.getParameter("description"))
+////                    .authorId(authorId)
+//                    .build();
+//            try {
+//                activityService.update(activityId, activityDto);
+//                resp.sendRedirect(req.getContextPath() + "/activity?unit-id=" + ((GetUnitDto) req.getSession().getAttribute("unit")).getId());
+//            } catch (ValidationException exception) {
+//                req.setAttribute("errors", exception.getErrors());
+//                doGet(req, resp);
+//            }
+//        }
     }
 }
