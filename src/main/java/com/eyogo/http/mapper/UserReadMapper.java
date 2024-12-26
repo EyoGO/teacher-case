@@ -1,18 +1,15 @@
 package com.eyogo.http.mapper;
 
-import com.eyogo.http.dto.GetUserDto;
+import com.eyogo.http.dto.UserReadDto;
 import com.eyogo.http.entity.User;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class GetUserMapper implements Mapper<User, GetUserDto> {
-
-    private static final GetUserMapper INSTANCE = new GetUserMapper();
+@Component
+public class UserReadMapper implements Mapper<User, UserReadDto> {
 
     @Override
-    public GetUserDto mapFrom(User object) {
-        return GetUserDto.builder()
+    public UserReadDto mapFrom(User object) {
+        return UserReadDto.builder()
                 .id(object.getId())
                 .firstName(object.getFirstName())
                 .lastName(object.getLastName())
@@ -22,9 +19,5 @@ public class GetUserMapper implements Mapper<User, GetUserDto> {
                 .image(object.getImage())
                 .gender(object.getGender())
                 .build();
-    }
-
-    public static GetUserMapper getInstance() {
-        return INSTANCE;
     }
 }

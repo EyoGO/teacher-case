@@ -1,7 +1,6 @@
 package com.eyogo.http.controller;
 
-import com.eyogo.http.dto.GetUnitDto;
-import com.eyogo.http.dto.GetUserDto;
+import com.eyogo.http.dto.UserReadDto;
 import com.eyogo.http.entity.Role;
 import com.eyogo.http.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -32,9 +31,9 @@ public class LoginController {
                         @RequestParam String email,
                         @RequestParam String password,
                         @SessionAttribute(required = false) Integer selectedUserId) {
-        Optional<GetUserDto> userOptional = userService.login(email, password);
+        Optional<UserReadDto> userOptional = userService.login(email, password);
         if (userOptional.isPresent()) {
-            GetUserDto user = userOptional.get();
+            UserReadDto user = userOptional.get();
             model.addAttribute("user", user);
             model.addAttribute("useCascade", false);
 

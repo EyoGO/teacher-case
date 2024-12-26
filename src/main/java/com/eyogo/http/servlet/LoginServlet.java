@@ -1,6 +1,6 @@
 package com.eyogo.http.servlet;
 
-import com.eyogo.http.dto.GetUserDto;
+import com.eyogo.http.dto.UserReadDto;
 import com.eyogo.http.entity.Role;
 import com.eyogo.http.service.UserService;
 import com.eyogo.http.util.JspHelper;
@@ -10,13 +10,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
-    private final UserService userService = UserService.getInstance();
+    @Autowired
+    private UserService userService;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -39,7 +41,7 @@ public class LoginServlet extends HttpServlet {
     }
 
     @SneakyThrows
-    private void onLoginSuccess(GetUserDto user, HttpServletRequest req, HttpServletResponse resp) {
+    private void onLoginSuccess(UserReadDto user, HttpServletRequest req, HttpServletResponse resp) {
         req.getSession().setAttribute("user", user);
         req.getSession().setAttribute("useCascade", false);
         Integer selectedUserId = (Integer) req.getSession().getAttribute("selectedUserId");

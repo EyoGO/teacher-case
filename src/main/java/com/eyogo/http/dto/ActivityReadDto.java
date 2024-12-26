@@ -6,10 +6,10 @@ import lombok.Value;
 
 @Builder
 @Value
-public class GetActivityDto {
+public class ActivityReadDto {
     Integer id;
-    GetUserDto user;
+    UserReadDto user;
     String name;
     String description;
-    GetUserDto author;
+    UserReadDto author;
 }

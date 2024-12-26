@@ -1,6 +1,6 @@
 package com.eyogo.http.controller;
 
-import com.eyogo.http.dto.GetUserDto;
+import com.eyogo.http.dto.UserReadDto;
 import com.eyogo.http.entity.Role;
 import com.eyogo.http.service.UnitService;
 import com.eyogo.http.service.UserService;
@@ -27,14 +27,14 @@ public class UnitController {
 
     @GetMapping("/{id}")
     public String findById(@PathVariable("id") Integer id, Model model) {
-        model.addAttribute("unit", unitService.findById(id));
+        model.addAttribute("unit", unitService.findById(id).get()); // TODO what if null
         return "singleunit";
     }
 
     // TODO remove it and at least create separate requests
     @PostMapping
     public String post(Model model,
-                       @SessionAttribute GetUserDto user,
+                       @SessionAttribute UserReadDto user,
                        @RequestParam(required = false) Integer userToWatch,
                        @RequestParam(required = false) Boolean useCascade) {
         if (user.getRole().equals(Role.ADMIN)) {

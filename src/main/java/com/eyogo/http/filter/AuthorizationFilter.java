@@ -1,6 +1,6 @@
 package com.eyogo.http.filter;
 
-import com.eyogo.http.dto.GetUserDto;
+import com.eyogo.http.dto.UserReadDto;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +26,7 @@ public class AuthorizationFilter implements Filter {
     }
 
     private boolean isUserLoggedIn(ServletRequest servletRequest) {
-        GetUserDto user = (GetUserDto) ((HttpServletRequest) servletRequest).getSession().getAttribute("user");
+        UserReadDto user = (UserReadDto) ((HttpServletRequest) servletRequest).getSession().getAttribute("user");
         return user != null;
     }
 

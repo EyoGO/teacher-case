@@ -1,28 +1,30 @@
 package com.eyogo.http.mapper;
 
-import com.eyogo.http.dto.GetUserDto;
+import com.eyogo.http.dto.UserReadDto;
 import com.eyogo.http.entity.Gender;
 import com.eyogo.http.entity.Role;
 import com.eyogo.http.entity.User;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+@SpringBootTest
+class UserReadMapperTest {
 
-class GetUserMapperTest {
-
-    private final GetUserMapper mapper = GetUserMapper.getInstance();
+    @Autowired
+    private UserReadMapper mapper;
 
     @Test
     void mapFrom() {
         User user = new User(1, "Bob", "Harvey", "bharvey@gmail.com",
                 "Welcome123", Role.ADMIN, LocalDate.of(1999, 4, 13), null, Gender.MALE);
 
-        GetUserDto actualResult = mapper.mapFrom(user);
+        UserReadDto actualResult = mapper.mapFrom(user);
 
-        GetUserDto expectedResult = GetUserDto.builder()
+        UserReadDto expectedResult = UserReadDto.builder()
                 .id(1)
                 .firstName("Bob")
                 .lastName("Harvey")

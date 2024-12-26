@@ -1,6 +1,6 @@
 package com.eyogo.http.servlet;
 
-import com.eyogo.http.dto.GetUserDto;
+import com.eyogo.http.dto.UserReadDto;
 import com.eyogo.http.service.ImageService;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -28,7 +28,7 @@ public class ImageServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Part file = request.getPart("file");
-        String upload = imageService.upload("/data/user_" + ((GetUserDto) request.getSession().getAttribute("user")).getId() +
+        String upload = imageService.upload("/data/user_" + ((UserReadDto) request.getSession().getAttribute("user")).getId() +
                                             File.separator + file.getSubmittedFileName(), file.getInputStream()); //TODO 1 user still can insert 2 images with the same name
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("location", upload);

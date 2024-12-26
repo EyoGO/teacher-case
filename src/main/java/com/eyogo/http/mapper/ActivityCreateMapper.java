@@ -1,15 +1,18 @@
 package com.eyogo.http.mapper;
 
-import com.eyogo.http.dto.CreateActivityDto;
+import com.eyogo.http.dto.ActivityCreateEditDto;
+import com.eyogo.http.dto.UnitReadDto;
 import com.eyogo.http.entity.Activity;
+import org.springframework.stereotype.Component;
 
-public class CreateActivityMapper implements Mapper<CreateActivityDto, Activity> {
+@Component
+public class ActivityCreateMapper implements Mapper<ActivityCreateEditDto, Activity> {
 
     public static final String IMAGE_FOLDER = "users";
-    private static final CreateActivityMapper INSTANCE = new CreateActivityMapper();
 
     @Override
-    public Activity mapFrom(CreateActivityDto object) {
+    public Activity mapFrom(ActivityCreateEditDto object) {
+//        UnitReadDto unit = unitMapper.mapFrom(object.getUnit());
         return Activity.builder()
                 .userId(object.getUserId())
 //                .unit(object.getUnitId() != null ? Integer.valueOf(object.getUnitId()) : null)
@@ -17,9 +20,5 @@ public class CreateActivityMapper implements Mapper<CreateActivityDto, Activity>
                 .description(object.getDescription())
                 .authorId(object.getAuthorId())
                 .build();
-    }
-
-    public static CreateActivityMapper getInstance() {
-        return INSTANCE;
     }
 }

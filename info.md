@@ -1,3 +1,7 @@
+1. For create methods return 201 response using @ResponseStatus(HttpStatus.CREATED)...
+2. @Transactional(readOnly=true) on Service layer (create methods will override it). Because we can access Entites on service that have lazy data and without Transaction session is closed
+3. use saveAndFlush on repository. in tests also use flush because in other case we have to wait for COMMIT, but tests does not perform commit
+
 Remove dependencies (lib) from Artifact, it will be added with maven on runtime (Tomcat).
 
 org.postgresql.util.PSQLException: ПОМИЛКА: повторювані значення ключа порушують обмеження унікальності "users_first_name_last_name_key"

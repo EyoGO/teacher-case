@@ -1,11 +1,10 @@
 package com.eyogo.http.controller;
 
 import com.eyogo.http.dao.UnitRepository;
-import com.eyogo.http.dto.GetUnitDto;
-import com.eyogo.http.dto.GetUserDto;
+import com.eyogo.http.dto.UnitReadDto;
+import com.eyogo.http.dto.UserReadDto;
 import com.eyogo.http.entity.Gender;
 import com.eyogo.http.entity.Role;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -53,8 +52,8 @@ public class GreetingController {
     // BESIDES that, we can create method marked with @ModelAttribute, and it will ALWAYS be called for each request to add result of that method to model. (roles method)
     @GetMapping("/hello")
     public String hello(Model model, HttpServletRequest request,
-                        @ModelAttribute("myUnit") GetUnitDto user) {
-        GetUserDto attributeValue = new GetUserDto(1, "Yurii", "Hentash", "gentashyura@gmail.com",
+                        @ModelAttribute("myUnit") UnitReadDto user) {
+        UserReadDto attributeValue = new UserReadDto(1, "Yurii", "Hentash", "gentashyura@gmail.com",
                 LocalDate.of(2000, 6, 26), null, Role.ADMIN, Gender.MALE);
 //        request.setAttribute("user", attributeValue);                   // (OLD-request_attribute)
 //        request.getSession().setAttribute("user", attributeValue);      // (OLD-session_attribute)

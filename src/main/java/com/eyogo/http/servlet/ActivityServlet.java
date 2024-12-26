@@ -1,10 +1,7 @@
 package com.eyogo.http.servlet;
 
-import com.eyogo.http.dto.CreateActivityDto;
-import com.eyogo.http.dto.GetActivityDto;
-import com.eyogo.http.dto.GetUnitDto;
-import com.eyogo.http.dto.GetUserDto;
-import com.eyogo.http.exception.ValidationException;
+import com.eyogo.http.dto.ActivityReadDto;
+import com.eyogo.http.dto.UnitReadDto;
 import com.eyogo.http.service.ActivityService;
 import com.eyogo.http.service.UnitService;
 import com.eyogo.http.util.JspHelper;
@@ -15,6 +12,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -23,7 +21,8 @@ import java.util.Optional;
 @WebServlet("/activity")
 public class ActivityServlet extends HttpServlet {
 
-    private final ActivityService activityService = ActivityService.getInstance();
+    @Autowired
+    private ActivityService activityService;
     private final UnitService unitService = UnitService.getInstance();
 
     @Override
@@ -31,8 +30,8 @@ public class ActivityServlet extends HttpServlet {
         String id = req.getParameter("id");
         if (StringUtils.isNotBlank(id)) {
             int i = Integer.parseInt(id);
-            GetActivityDto getActivityDto = activityService.findStrictedDataById(i);
-            String json = new Gson().toJson(getActivityDto);//TODO what if empty
+            Optional<ActivityReadDto> activityOptional = activityService.findStrictedDataById(i);
+            String json = new Gson().toJson(activityOptional.get());//TODO what if empty
             PrintWriter out = resp.getWriter();
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
@@ -48,8 +47,8 @@ public class ActivityServlet extends HttpServlet {
                 unitId = Integer.parseInt(unitIdString);
             }
 
-            GetUnitDto unitDto = unitService.findById(unitId);
-            req.getSession().setAttribute("unit", unitDto);
+            Optional<UnitReadDto> unitReadDtoOptional = unitService.findById(unitId);
+            req.getSession().setAttribute("unit", unitReadDtoOptional.get()); // TODO what if null
 
             //TODO add ability not to specify unit to get all User's activities
             //TODO Consider 2 alternatives: either IF here and when 0 - call another method or pass 0 as parameter and handle it in service

@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class CreateUserDto {
+public class UserCreateDto {
 //    String id;
     String firstName;
     String lastName;

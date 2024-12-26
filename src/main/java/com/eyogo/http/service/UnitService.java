@@ -1,8 +1,9 @@
 package com.eyogo.http.service;
 
 import com.eyogo.http.dao.UnitRepository;
-import com.eyogo.http.dto.GetUnitDto;
+import com.eyogo.http.dto.UnitReadDto;
 import com.eyogo.http.entity.Unit;
+import com.eyogo.http.mapper.UserReadMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,14 +31,14 @@ public class UnitService {
         this.unitRepository = unitRepository;
     }
 
-    public List<GetUnitDto> findAll() {
+    public List<UnitReadDto> findAll() {
         List<Unit> units = unitRepository.findAll();
-        List<GetUnitDto> rootUnits = new ArrayList<>();
+        List<UnitReadDto> rootUnits = new ArrayList<>();
 
         Map<Integer, List<Unit>> parentIdToUnit = units.stream().collect(Collectors.groupingBy(Unit::getParentId));
         for (Unit unit: units) {
             if (unit.getParentId() == -1) {
-                rootUnits.add(GetUnitDto.builder()
+                rootUnits.add(UnitReadDto.builder()
                         .id(unit.getId())
                         .name(unit.getUnitName())
                         .descendants(getDescendants(unit.getId(), parentIdToUnit))
@@ -49,13 +50,13 @@ public class UnitService {
         return rootUnits;
     }
 
-    private List<GetUnitDto> getDescendants(Integer unitId, Map<Integer, List<Unit>> parentIdToUnits) {
-        List<GetUnitDto> descendants = new ArrayList<>();
+    private List<UnitReadDto> getDescendants(Integer unitId, Map<Integer, List<Unit>> parentIdToUnits) {
+        List<UnitReadDto> descendants = new ArrayList<>();
         List<Unit> descendantUnits = parentIdToUnits.get(unitId);
         if (descendantUnits != null) {
             for (Unit descendantUnit: descendantUnits) {
                 Integer descendantId = descendantUnit.getId();
-                descendants.add(GetUnitDto.builder()
+                descendants.add(UnitReadDto.builder()
                         .id(descendantId)
                         .name(descendantUnit.getUnitName())
                         .descendants(getDescendants(descendantId, parentIdToUnits))
@@ -67,15 +68,14 @@ public class UnitService {
         return descendants;
     }
 
-    public GetUnitDto findById(Integer unitId) {
+    public Optional<UnitReadDto> findById(Integer unitId) {
         Optional<Unit> unitById = unitRepository.findById(unitId);
-        return unitById.map(unit -> GetUnitDto.builder()
+        return unitById.map(unit -> UnitReadDto.builder()
                 .id(unit.getId())
                 .name(unit.getUnitName())
                 .descendants(null)//TODO consider this, maybe need new DTO
                 .managedByAdmin(unit.getManagedByAdmin())
-                .build())
-                .orElseThrow(() -> new EntityNotFoundException("Unit not found."));
+                .build());
     }
 
     public static UnitService getInstance() {

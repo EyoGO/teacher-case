@@ -1,14 +1,12 @@
 package com.eyogo.http.integration.service;
 
 import com.eyogo.http.config.DatabaseProperties;
-import com.eyogo.http.dto.GetUnitDto;
+import com.eyogo.http.dto.UnitReadDto;
 import com.eyogo.http.integration.annotation.IT;
 import com.eyogo.http.service.UnitService;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
@@ -71,11 +69,11 @@ public class UnitServiceIT {
 
     @Test
     void findById() {
-        Optional<GetUnitDto> actualResult = unitService.findById(ID);
+        Optional<UnitReadDto> actualResult = unitService.findById(ID);
 
         Assertions.assertTrue(actualResult.isPresent());
 
-        GetUnitDto expected = GetUnitDto.builder().id(ID).name("UnitName").managedByAdmin(false).build();
+        UnitReadDto expected = UnitReadDto.builder().id(ID).name("UnitName").managedByAdmin(false).build();
         actualResult.ifPresent(actual -> Assertions.assertEquals(expected, actual));
     }
 }

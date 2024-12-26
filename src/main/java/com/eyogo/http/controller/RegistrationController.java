@@ -1,6 +1,6 @@
 package com.eyogo.http.controller;
 
-import com.eyogo.http.dto.CreateUserDto;
+import com.eyogo.http.dto.UserCreateDto;
 import com.eyogo.http.entity.Gender;
 import com.eyogo.http.entity.Role;
 import com.eyogo.http.exception.ValidationException;
@@ -30,7 +30,7 @@ public class RegistrationController {
 
     @PostMapping
     public String register(Model model,
-                           @ModelAttribute CreateUserDto userDto) {
+                           @ModelAttribute UserCreateDto userDto) {
         try {
             userService.create(userDto);
             return "redirect:/units";

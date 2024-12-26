@@ -1,6 +1,6 @@
 package com.eyogo.http.servlet;
 
-import com.eyogo.http.dto.GetUserDto;
+import com.eyogo.http.dto.UserReadDto;
 import com.eyogo.http.entity.Role;
 import com.eyogo.http.service.UnitService;
 import com.eyogo.http.service.UserService;
@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -19,14 +20,16 @@ import java.util.stream.Collectors;
 @WebServlet("/unit")
 public class UnitServlet extends HttpServlet {
 
-    private final UnitService unitService = UnitService.getInstance();
-    private final UserService userService = UserService.getInstance();
+    @Autowired
+    private UnitService unitService;
+    @Autowired
+    private UserService userService;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setAttribute("units", unitService.findAll());
         req.setAttribute("usersSelection", userService.findAll().stream()
-                .sorted(Comparator.comparing(GetUserDto::getFirstName))
+                .sorted(Comparator.comparing(UserReadDto::getFirstName))
                 .collect(Collectors.toList()));
 
         req.getRequestDispatcher(JspHelper.getPath("unit"))
@@ -35,7 +38,7 @@ public class UnitServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        GetUserDto user = ((GetUserDto) req.getSession().getAttribute("user"));
+        UserReadDto user = ((UserReadDto) req.getSession().getAttribute("user"));
         if (user.getRole().equals(Role.ADMIN)) {
             String userToWatch = req.getParameter("userToWatch");
             if (StringUtils.isNotBlank(userToWatch)) {

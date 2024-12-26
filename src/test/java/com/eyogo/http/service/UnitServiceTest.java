@@ -1,7 +1,7 @@
 package com.eyogo.http.service;
 
 import com.eyogo.http.dao.UnitRepository;
-import com.eyogo.http.dto.GetUnitDto;
+import com.eyogo.http.dto.UnitReadDto;
 import com.eyogo.http.entity.Unit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -31,11 +31,11 @@ class UnitServiceTest {
         Mockito.doReturn(Optional.of(new Unit(ID, "UnitName", 1, false)))
                 .when(unitDao).findById(ID);
 
-        Optional<GetUnitDto> actualResult = unitService.findById(ID);
+        Optional<UnitReadDto> actualResult = unitService.findById(ID);
 
         Assertions.assertTrue(actualResult.isPresent());
 
-        GetUnitDto expected = GetUnitDto.builder().id(ID).name("UnitName").managedByAdmin(false).build();
+        UnitReadDto expected = UnitReadDto.builder().id(ID).name("UnitName").managedByAdmin(false).build();
         actualResult.ifPresent(actual -> Assertions.assertEquals(expected, actual));
 
         Mockito.verify(unitDao, Mockito.times(1)).findById(ID);

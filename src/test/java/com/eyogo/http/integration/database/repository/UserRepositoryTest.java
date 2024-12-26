@@ -1,17 +1,15 @@
 package com.eyogo.http.integration.database.repository;
 
 import com.eyogo.http.dao.UserRepository;
-import com.eyogo.http.dto.GetUserDto;
+import com.eyogo.http.dto.UserReadDto;
 import com.eyogo.http.dto.GetUserDto2;
 import com.eyogo.http.entity.Gender;
 import com.eyogo.http.entity.Role;
 import com.eyogo.http.entity.User;
 import com.eyogo.http.integration.IntegrationTestBase;
-import com.eyogo.http.integration.annotation.IT;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
@@ -24,7 +22,7 @@ class UserRepositoryTest extends IntegrationTestBase {
 
     @Test
     void classProjection() {
-        List<GetUserDto> allByRole = userRepository.findAllByRole(Role.ADMIN, GetUserDto.class);
+        List<UserReadDto> allByRole = userRepository.findAllByRole(Role.ADMIN, UserReadDto.class);
         assertNotNull(allByRole);
         Assertions.assertThat(allByRole).hasSize(1);
     }

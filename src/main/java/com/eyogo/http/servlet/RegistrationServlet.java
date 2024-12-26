@@ -1,9 +1,7 @@
 package com.eyogo.http.servlet;
 
-import com.eyogo.http.dto.CreateUserDto;
 import com.eyogo.http.entity.Gender;
 import com.eyogo.http.entity.Role;
-import com.eyogo.http.exception.ValidationException;
 import com.eyogo.http.service.UserService;
 import com.eyogo.http.util.JspHelper;
 //import com.eyogo.http.util.UrlPath;
@@ -13,6 +11,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 
@@ -20,7 +19,8 @@ import java.io.IOException;
 @WebServlet("/registration")
 public class RegistrationServlet extends HttpServlet {
 
-    private final UserService userService = UserService.getInstance();
+    @Autowired
+    private UserService userService;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

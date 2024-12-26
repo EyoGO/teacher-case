@@ -1,12 +1,12 @@
 package com.eyogo.http.service;
 
 import com.eyogo.http.dao.UserRepository;
-import com.eyogo.http.dto.CreateUserDto;
-import com.eyogo.http.dto.GetUserDto;
+import com.eyogo.http.dto.UserCreateDto;
+import com.eyogo.http.dto.UserReadDto;
 import com.eyogo.http.entity.User;
 import com.eyogo.http.exception.ValidationException;
 import com.eyogo.http.mapper.CreateUserMapper;
-import com.eyogo.http.mapper.GetUserMapper;
+import com.eyogo.http.mapper.UserReadMapper;
 import com.eyogo.http.projection.UserNameProjection;
 import com.eyogo.http.validation.CreateUserValidator;
 import com.eyogo.http.validation.ValidationResult;
@@ -21,25 +21,21 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-    private static final UserService INSTANCE = new UserService();
-
     @Autowired
     private UserRepository userRepository;
-    private final GetUserMapper getUserMapper = GetUserMapper.getInstance();
+    @Autowired
+    private UserReadMapper userReadMapper;
     private final CreateUserValidator createUserValidator = CreateUserValidator.getInstance();
     private final CreateUserMapper createUserMapper = CreateUserMapper.getInstance();
     private final ImageService imageService = ImageService.getInstance();
 
-    public UserService() {
-    }
-
-    public Optional<GetUserDto> login(String email, String password) {
+    public Optional<UserReadDto> login(String email, String password) {
         return userRepository.findByEmailAndPassword(email, password)
-                .map(getUserMapper::mapFrom);
+                .map(userReadMapper::mapFrom);
     }
 
     @SneakyThrows
-    public Integer create(CreateUserDto userDto) {
+    public Integer create(UserCreateDto userDto) {
         //validate
         ValidationResult validationResult = createUserValidator.isValid(userDto);
         if (!validationResult.isValid()) {
@@ -54,24 +50,18 @@ public class UserService {
         return userEntity.getId();
     }
 
-    public List<GetUserDto> findAll() {
+    public List<UserReadDto> findAll() {
         return userRepository.findAll().stream()
-                .map(getUserMapper::mapFrom)
+                .map(userReadMapper::mapFrom)
                 .collect(Collectors.toList());
     }
 
-    public Optional<GetUserDto> findById(Integer id) {
-//        return userRepository.findById(id)
-//                .map(getUserMapper::mapFrom);
-//        return userRepository.findById(id);
-        return null;
+    public Optional<UserReadDto> findById(Integer id) {
+        return userRepository.findById(id)
+                .map(userReadMapper::mapFrom);
     }
 
     public List<UserNameProjection> findAllNames() {
         return userRepository.findAllNames();
-    }
-
-    public static UserService getInstance() {
-        return INSTANCE;
     }
 }
