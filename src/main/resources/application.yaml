@@ -39,7 +39,8 @@ spring:
       show_sql: true
       format_sql: true
       hbm2ddl: validate
-#      default_schema: teacher-case
+    open-in-view: false #database queries can/can't be performed during view rendering. when TRUE, then transactions open on view, to disable set FALSE
+  #      default_schema: teacher-case
   mvc:
     view:
       prefix: /WEB-INF/jsp/

@@ -1,19 +1,7 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: Yurii Hentash
-  Date: 30.09.2023
-  Time: 21:46
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="myTags" %>
-<%@ page import="com.eyogo.http.entity.Role" %>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Units</title>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/styles/unit.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/unit.css}">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -34,27 +22,28 @@
     </script>
 </head>
 <body>
-    <%@include file="header.jsp"%>
+<!--    <%@include file="header.jsp"%>-->
     <form method="post">
-        <c:if test="${sessionScope.user.role == (Role.ADMIN)}">
+        <div th:if="${session.user.role == T(com.eyogo.http.entity.Role).ADMIN}">
             <label for="userSelector">Виберіть користувача:</label>
             <select name="userToWatch" id="userSelector">
-                <c:forEach var="user" items="${requestScope.get(\"usersSelection\")}">
-                    <option value="${user.id}" ${user.id.equals(sessionScope.selectedUserId) ? "selected=\"selected\"" : ""}>${user.fullName}</option>
-                </c:forEach>
+                <option th:each="user : ${usersSelection}" th:value="${user.id}" th:text="${user.fullName}"
+                        th:selected="${user.id == session.selectedUserId}">
+                </option>
             </select>
-        </c:if>
+        </div>
         <fieldset>
             <legend>Використовувати каскадний пошук:</legend>
-            <input type="radio" id="yes" name="useCascade" value="true" ${sessionScope.useCascade ? "checked" : ""}>
+            <input type="radio" id="yes" name="useCascade" value="true" th:checked="${session.useCascade}">
             <label for="yes">Так</label>
-            <input type="radio" id="no" name="useCascade" value="false" ${sessionScope.useCascade ? "" : "checked"}>
+            <input type="radio" id="no" name="useCascade" value="false" th:checked="${!session.useCascade}">
             <label for="no">Ні</label><br>
         </fieldset>
         <input type="submit" value="Підтвердити" />
     </form>
 
 <h1>Розділи:</h1>
-<myTags:units units="${requestScope.units}"/>
+<div th:replace="fragments :: unitFragment (${units})"></div>
+<!--<myTags:units units="${requestScope.units}"/>-->
 </body>
 </html>

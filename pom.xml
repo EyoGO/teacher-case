@@ -111,6 +111,13 @@ UnitRepository від Repository інтерфейсу. Спрінг сканув
         <!--        So we have 3 layers - Controller, Model, View. We will start without Model:
                 There will be controller that handles http request by some path and returns a page (view, for JSP added Jasper dependency).
                 We can set default prefix and postfix to specify location of our views and extensions using spring.-->
+
+<!--        FORMATTER. THERE are 3 ways to define date format:
+    1) Property spring.mvc.format.date: iso
+    2) Manually in Entity class add @DateTimeFormat(pattern="yyyy-mm-dd")
+    3) Create own WebConfiguration implements WebMvcConfigurer. After that we can adjust almost everything like
+    @Override addFormatters(... registry) {registry.addConverter(Jsr310Converters.StringToLocalDateConverter.INSTANCE)}
+    ///Converter stands for converting from S->D, while formatter is connected with Locale - localisation\\\-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -118,6 +125,11 @@ UnitRepository від Repository інтерфейсу. Спрінг сканув
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId><!-- required for JSP because embedded by default has Coyote and Catalina, but not Jasper -->
             <artifactId>tomcat-embed-jasper</artifactId>
+        </dependency>
+<!--        Next library creates own ViewResolver bean overriding default logic.-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
 <!--        This is an advanced auditing dependency (default holds fields modifiedBy createdAt... in AuditingEntity)

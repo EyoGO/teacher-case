@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS unit_aud
     rev              INT REFERENCES revision (id),
     revtype          SMALLINT,
     unit_name        VARCHAR,
-    parent_id        SMALLINT,
+    parent_id        INTEGER,
     managed_by_admin BOOLEAN,
     PRIMARY KEY (rev, id)
 );
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS activity_aud
     rev           INT REFERENCES revision (id),
     revtype       SMALLINT,
     user_id       INTEGER,
-    unit_id       SMALLINT,
+    unit_id       INTEGER,
     activity_name VARCHAR,
     description   VARCHAR,
     author_id     INTEGER,

@@ -19,7 +19,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/api/v1")
-@SessionAttributes({"user"}) // (NEW-session_attribute)
+@SessionAttributes({"user", "user1"}) // (NEW-session_attribute)
 public class GreetingController {
     // Here will be explained how we used to access Parameters, Headers, Cookies previously (OLD) and now with Spring (NEW)
     // All these variables are injected thanks to HandlerAdapter's parameter resolvers (debug and see list of them in DispatcherServlet.doDispatch)
@@ -72,5 +72,18 @@ public class GreetingController {
     @ModelAttribute("roles")
     public List<Role> roles() {
         return Arrays.asList(Role.values());
+    }
+
+    @GetMapping("/test")
+    public String test(Model model, HttpServletRequest request,
+                       @ModelAttribute("user11") UnitReadDto unitReadDto) {
+        model.addAttribute("user1", unitReadDto);
+        return "test/hello";
+    }
+
+    @GetMapping("/testbye")
+    public String testbye(Model model, HttpServletRequest request,
+                       @SessionAttribute("user1") UnitReadDto unitReadDto) {
+        return "test/bye";
     }
 }

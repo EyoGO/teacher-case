@@ -13,7 +13,7 @@
 <head>
     <title>Title</title>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/styles/unit.css">
-    <script src="../../libs/tinymce/js/tinymce/tinymce.min.js"
+    <script src="../../webapp/libs/tinymce/js/tinymce/tinymce.min.js"
             referrerpolicy="origin"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>

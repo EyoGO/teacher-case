@@ -13,17 +13,17 @@ import org.springframework.core.SpringProperties;
 public class ApplicationRunner {
 
     public static void main(String[] args) {
-        ConfigurableApplicationContext context = SpringApplication.run(ApplicationRunner.class, args);
-        log.info(String.valueOf(context.getBeanDefinitionCount()));
-
-        log.info(SpringProperties.getProperty("test.message"));
-        log.info(SpringProperties.getProperty("test.full.message"));
-
-        log.info(SpringProperties.getProperty("app.name"));
-        log.info(SpringProperties.getProperty("app.description"));
-
-        TestComponent bean = context.getBean(TestComponent.class);
-        log.info(bean.toString());
+        /*ConfigurableApplicationContext context = */SpringApplication.run(ApplicationRunner.class, args);
+//        log.info(String.valueOf(context.getBeanDefinitionCount()));
+//
+//        log.info(SpringProperties.getProperty("test.message"));
+//        log.info(SpringProperties.getProperty("test.full.message"));
+//
+//        log.info(SpringProperties.getProperty("app.name"));
+//        log.info(SpringProperties.getProperty("app.description"));
+//
+//        TestComponent bean = context.getBean(TestComponent.class);
+//        log.info(bean.toString());
 
 //        try (var appContext = new ClassPathXmlApplicationContext("application.xml")) {
         // Need to close AC to call close() - trigger lifecycle callback
