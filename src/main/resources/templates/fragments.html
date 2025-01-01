@@ -5,13 +5,14 @@
 </head>
 <body>
   <ul th:fragment="unitFragment (units)" style="display: block">
-    <li th:each="unit : ${units}"
-        th:class="${(unit.descendants != null && unit.descendants.size() > 0) ? 'collapsible' : 'simple'}">
-      <a th:href="@{/activities(unit-id=${unit.id})}" th:text="${unit.name}"></a>
-        <div th:if="${unit.descendants != null && !unit.descendants.isEmpty()}" th:replace="fragments :: unitFragment(${unit.descendants})">
-<!--            <div th:replace="fragments :: unitFragment(${unit.descendants})"></div>-->
-        </div>
-    </li>
+      <th:block th:each="unit : ${units}">
+          <li th:class="${(unit.descendants != null && unit.descendants.size() > 0) ? 'collapsible' : 'simple'}">
+              <a th:href="@{/activities(unit-id=${unit.id})}" th:text="${unit.name}"></a>
+          </li>
+          <div th:if="${unit.descendants != null && !unit.descendants.isEmpty()}"
+               th:replace="fragments :: unitFragment(${unit.descendants})">
+          </div>
+      </th:block>
   </ul>
 </body>
 </html>

@@ -1,54 +1,47 @@
 <!DOCTYPE HTML>
-<%--
-  Created by IntelliJ IDEA.
-  User: Yurii Hentash
-  Date: 30.09.2023
-  Time: 21:46
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<html>
+<!--<%&#45;&#45;<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>&#45;&#45;%>-->
+<!--<%&#45;&#45;<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>&#45;&#45;%>-->
+<!--<%&#45;&#45;<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>&#45;&#45;%>-->
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Title</title>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/styles/unit.css">
-    <script src="../../webapp/libs/tinymce/js/tinymce/tinymce.min.js"
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/unit.css}">
+    <script src="../libs/tinymce/js/tinymce/tinymce.min.js"
             referrerpolicy="origin"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
-<%@include file="header.jsp" %>
-<a href="${pageContext.request.contextPath}/units">⇦</a>
-<h1>${sessionScope.unit.name}</h1>
+<!--<%&#45;&#45;<%@include file="header.jsp" %>&#45;&#45;%>-->
+<a th:href="@{/units}">⇦</a>
+<h1 th:text="${session.unit.name}"></h1>
 <h2>Список активностей:</h2>
 
 <table>
     <th>Назва активності</th>
     <th>Опис</th>
-    <c:forEach var="activity" items="${requestScope.activities}">
-        <tr>
-            <td>${activity.name}</td>
-            <td>${activity.description}</td>
-            <c:if test="${sessionScope.unit.managedByAdmin ? sessionScope.user.role == Role.ADMIN : sessionScope.selectedUserId == sessionScope.user.id}">
+<!--    <c:forEach var="activity" items="${requestScope.activities}">-->
+        <tr th:each="activity : ${activities}">
+            <td th:text="${activity.name}"></td>
+            <td th:utext="${activity.description}"></td>
+            <th:block th:if="${session.unit.managedByAdmin ? session.user.role == T(com.eyogo.http.entity.Role).ADMIN : session.selectedUserId == session.user.id}">
                 <td class="activityTableDataWithButton">
                     <button type="button"
-                            onclick='setUpdateFormValues(${activity.id}, `${activity.name.replaceAll("\'", "&apos;")}`)'>
-                        Змінити
+                            th:onclick="setUpdateFormValues([[${activity.id}]], [[${activity.name}]], [[${param.get('unit-id')}]])" th:text="Змінити">
                     </button>
                 </td>
                 <td class="activityTableDataWithButton">
-                    <form onSubmit="if(!confirm('Дійсно видалити запис з назвою ${activity.name}?')){return false;}"
-                          action="${pageContext.request.contextPath}/activities?activityId=${activity.id}&action=delete"
+<!--                    <form onSubmit="if(!confirm('Дійсно видалити запис з назвою ${activity.name}?')){return false;}"-->
+                    <form th:onsubmit="return confirm('Дійсно видалити запис з назвою ' + [[${activity.name}]] + '?');"
+                          th:action="@{/activities(activityId=${activity.id}, action='delete')}"
                           method="post">
                         <input type="submit" name="delete" value="Видалити"/>
                     </form>
                 </td>
-                <%--                Не давати Update кнопку, якщо ти не автор і заборонити це на бекенді--%>
-            </c:if>
+<!--                <%&#45;&#45;                Не давати Update кнопку, якщо ти не автор і заборонити це на бекенді&#45;&#45;%>-->
+            </th:block>
         </tr>
-    </c:forEach>
-    <c:if test="${sessionScope.unit.managedByAdmin ? sessionScope.user.role == Role.ADMIN : sessionScope.selectedUserId == sessionScope.user.id}">
+<!--    </c:forEach>-->
+    <th:block th:if="${session.unit.managedByAdmin ? session.user.role == T(com.eyogo.http.entity.Role).ADMIN : session.selectedUserId == session.user.id}">
         <tr>
             <td>
                 <button id="openPopup">Додати активність</button>
@@ -58,7 +51,7 @@
                         <span class="close" id="closePopup">&times;</span>
                         <h2 id="popupHeading">Додавання активності</h2>
                         <form id="popupForm"
-                              action="${pageContext.request.contextPath}/activities?unit-id=${param.get("unit-id")}&action=add"
+                              th:action="@{/activities(unit-id=${param.get('unit-id')}, action='add')}"
                               method="post">
                             <label for="name">Назва активності:</label>
                             <input type="text" id="name" name="activityName" required>
@@ -73,7 +66,7 @@
                         tinymce.get('basic-example').setContent(``);
                         document.getElementById("popupHeading").innerText = `Додавання активності`;
                         document.getElementById("name").value = ``;
-                        document.getElementById("popupForm").action = `${pageContext.request.contextPath}/activities?unit-id=${param.get("unit-id")}&action=add`;
+                        // document.getElementById("popupForm").action = /*[[@{/activities(unit-id=${param.get('unit-id')}, action='add')}]]*/'';
                         document.getElementById("popup").style.display = "block";
                     });
 
@@ -84,8 +77,8 @@
                     // Initialize TinyMCE for the textarea with ID 'basic-example'tinymce.get('yourTextareaId').setContent(textFromBackend);
                     tinymce.init({
                         selector: 'textarea#basic-example',
-                        images_upload_url: '${pageContext.request.contextPath}/images',
-                        images_upload_base_path: '${pageContext.request.contextPath}/images',
+                        images_upload_url: /*[[@{/images}]]*/'WILL BE REPLACED',
+                        images_upload_base_path: /*[[@{/images}]]*/'WILL BE REPLACED',
                         skin: "oxide-dark",
                         content_css: "dark",
                         plugins: 'image link code',
@@ -93,7 +86,7 @@
                         // language: 'uk'
                     });
 
-                    function setUpdateFormValues(activityId, activityName) {
+                    function setUpdateFormValues(activityId, activityName, unitId) {
                         fetchRecordData(activityId)
                             .then(recordData => {
                                 console.log(recordData);
@@ -103,7 +96,7 @@
                                 console.log('2');
                                 document.getElementById("name").value = activityName;
                                 console.log('3');
-                                document.getElementById("popupForm").action = `${pageContext.request.contextPath}/activities?unit-id=${param.get("unit-id")}&action=update&activityId=` + activityId;
+                                document.getElementById("popupForm").action = '/activities?unit-id=' + unitId + '&action=update&activityId=' + activityId;
                                 console.log('4');
                                 document.getElementById("popup").style.display = "block";
                                 console.log('5');
@@ -115,7 +108,7 @@
 
                     function fetchRecordData(recordId) {
                         // Perform an AJAX request to fetch the record data
-                        return fetch(`${pageContext.request.contextPath}/activities/` + recordId, {
+                        return fetch('activities/' + recordId, {
                             method: 'GET',
                             headers: {
                                 'Accept': 'application/json',
@@ -141,7 +134,7 @@
                 </script>
             </td>
         </tr>
-    </c:if>
+    </th:block>
 </table>
 </body>
 </html>
