@@ -26,7 +26,7 @@
     </label><br>
     <select name="role" id="role" required>
 <!--        <option value="" disabled selected>Select a role</option>-->
-        <option th:each="role : ${roles}" th:value="${role}" th:text="${role}" th:selected="${role == user.role}"></option>
+        <option th:each="role : ${roles}" th:value="${role}" th:text="${role}" th:selected="${role.name() == user.role}"></option>
     </select>
 <!--    <select name="role" id="role" required>-->
 <!--        <c:forEach var="role" items="${requestScope.roles}">-->
@@ -35,7 +35,7 @@
 <!--    </select>-->
     <br>
     <div th:each="gender : ${genders}">
-        <input th:id="${gender}" type="radio" name="gender" th:value="${gender}" th:checked="${gender == user.gender}" required>
+        <input th:id="${gender}" type="radio" name="gender" th:value="${gender}" th:checked="${gender.name() == user.gender}" required>
         <label th:for="${gender}" th:text="${gender}"></label>
     </div>
 <!--    <c:forEach var="gender" items="${requestScope.genders}">-->
@@ -43,8 +43,8 @@
 <!--        <br>-->
 <!--    </c:forEach>-->
     <button type="submit">Підтвердити</button>
-    <div th:if="${errors!=null and !errors.isEmpty()}" style="color: red">
-        <div th:each="error : ${errors}" th:text="${error}"></div>
+    <div th:if="${errors}" style="color: red">
+        <div th:each="error : ${errors}" th:text="${error.defaultMessage}"></div>
     </div>
 </form>
 </body>

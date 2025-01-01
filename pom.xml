@@ -132,6 +132,18 @@ UnitRepository від Repository інтерфейсу. Спрінг сканув
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
+        <!--        Adds transitive validation JSR-303 that contains @Email, @Size... validation annotations, implementations
+        are provided by hibernate validation module.
+        Just put annotations on DTO (and maybe parameters) and then add @Valid/@Validated annotation on bound controller parameter.
+        After that we will receive 4xx errors for non-valid. We can control it manualy and get errors adding BindingResult parameter right after validated object.
+        Using binding result we can print errors.
+        Read RegistrationController next (exceptionHandler)
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
 <!--        This is an advanced auditing dependency (default holds fields modifiedBy createdAt... in AuditingEntity)
         Envers works like GIT, it has revision Entity and has Date of revision and ID of revision, revision itself contains info about what data was changed.
         For this create Revision entity.-->
