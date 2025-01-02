@@ -4,7 +4,6 @@ import com.eyogo.http.dto.ActivityCreateEditDto;
 import com.eyogo.http.dto.ActivityReadDto;
 import com.eyogo.http.dto.UnitReadDto;
 import com.eyogo.http.dto.UserReadDto;
-import com.eyogo.http.exception.ValidationException;
 import com.eyogo.http.service.ActivityService;
 import com.eyogo.http.service.UnitService;
 import com.google.gson.Gson;
@@ -32,9 +31,9 @@ public class ActivityController {
 
     @GetMapping
     protected String activityPage(Model model,
-                           @SessionAttribute Integer selectedUserId,
-                           @SessionAttribute Boolean useCascade,
-                           @RequestParam(value = "unit-id", required = false) Integer unitId) {
+                                  @SessionAttribute Integer selectedUserId,
+                                  @SessionAttribute Boolean useCascade,
+                                  @RequestParam(value = "unit-id", required = false) Integer unitId) {
         Optional<UnitReadDto> unitDtoOptional = unitService.findById(unitId);
         model.addAttribute("unit", unitDtoOptional.get());//TODO what if null
 
@@ -55,16 +54,16 @@ public class ActivityController {
 
     @PostMapping
     public String doPost(Model model,
-                            String action,
-                            @SessionAttribute Integer selectedUserId,
-                            @SessionAttribute UserReadDto user,
-                            @ModelAttribute ActivityCreateEditDto activityCreateEditDto,
-                            @SessionAttribute UnitReadDto unit,
+                         String action,
+                         @SessionAttribute Integer selectedUserId,
+                         @SessionAttribute UserReadDto user,
+                         @ModelAttribute ActivityCreateEditDto activityCreateEditDto,
+                         @SessionAttribute UnitReadDto unit,
 
-                            @RequestParam(required = false) Integer activityId,
+                         @RequestParam(required = false) Integer activityId,
 
-                            @RequestParam(required = false) String activityName,
-                            @RequestParam(required = false) String description) throws ServletException, IOException {
+                         @RequestParam(required = false) String activityName,
+                         @RequestParam(required = false) String description) throws ServletException, IOException {
         if (action.equals("add")) {//TODO can add/delete through POST request to other users. need to restrict like in JSP
             Integer authorId = user.getId();
             ActivityCreateEditDto activityToCreate = ActivityCreateEditDto.builder()
@@ -74,14 +73,8 @@ public class ActivityController {
                     .description(activityCreateEditDto.getDescription())
                     .authorId(authorId)
                     .build();
-            try {
-                activityService.create(activityToCreate);
-                return "redirect:/activities?unit-id=" + unit.getId();
-            } catch (ValidationException exception) {
-                model.addAttribute("errors", exception.getErrors()); // TODO make no sense with redirect?
-                return "redirect:/activities?unit-id=" + unit.getId();
-//                doGet(req, resp); // TODO investigate analogue
-            }
+            activityService.create(activityToCreate);
+            return "redirect:/activities?unit-id=" + unit.getId();
         } else if (action.equals("delete")) {
             activityService.delete(activityId);
             return "redirect:/activities?unit-id=" + unit.getId();
@@ -93,14 +86,8 @@ public class ActivityController {
                     .description(description)
 //                    .authorId(authorId)
                     .build();
-            try {
-                activityService.update(activityId, activityDto);
-                return "redirect:/activities?unit-id=" + unit.getId();
-            } catch (ValidationException exception) {
-                model.addAttribute("errors", exception.getErrors()); // TODO make no sense with redirect?
-                return "redirect:/activities?unit-id=" + unit.getId();
-//                doGet(req, resp); // TODO investigate analogue
-            }
+            activityService.update(activityId, activityDto);
+            return "redirect:/activities?unit-id=" + unit.getId();
         }
         return "redirect:/activities?unit-id=" + unit.getId();
     }

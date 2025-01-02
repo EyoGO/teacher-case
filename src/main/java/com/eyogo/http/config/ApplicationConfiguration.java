@@ -36,28 +36,28 @@ public class ApplicationConfiguration {
     // ТРЕБА генерувати пустий контекст, зареєструвати наші конфіг класи (це ще нічого не зробить до виклику refresh() - читай javadoc register()), Дотати профілі й РЕФРЕШНУТИ ЙОГО appContext.refresh()
 
     // Завдяки Java-based конфігу ми тепер можемо створити не тільки 1 бін. Бо @Component над класом давав лише таку можливість.
-    @Bean
-    public UserService userService2(@Value("${db.user}") String user) {
-        log.info(user);
-        return new UserService();
-    }
+//    @Bean
+//    public UserService userService2(@Value("${db.user}") String user) {
+//        log.info(user);
+//        return new UserService();
+//    }
 
-    @Bean
-    public UnitService unitService2(@Qualifier("userService2") UserService userService2) {
-        log.info("1. Injected UserService " + userService2);
-        return new UnitService();
-    }
+//    @Bean
+//    public UnitService unitService2(@Qualifier("userService2") UserService userService2) {
+//        log.info("1. Injected UserService " + userService2);
+//        return new UnitService();
+//    }
 
-    @Bean
-    public UnitService unitService3(@Value("${db.user}") String user) {
-        // Не найкраща ідея юзати метод коли є параметри, бо треба його передавати тепер в цей метод.
-        // Працює приблизно ось так - над цим класом робиться проксі, коли викликається метод перевіряється в проксі методі
-        // чи був уже створений цей бін. Якщо був - то просто поверни його. Саме тому, що б я не передавав параметром далі
-        // в викликах userService("2"), повернеться бін з тим параметром яким він був попередньо створений.
-        UserService userService = userService2(user);
-        log.info("2. Injected UserService " + userService);
-        log.info("3. Injected UserService " + userService2("2")); // Не трігерне вивід з userService2(...), бо бін уже створений і проксі не запустить реальний метод.
-        return new UnitService();
-    }
+//    @Bean
+//    public UnitService unitService3(@Value("${db.user}") String user) {
+//        // Не найкраща ідея юзати метод коли є параметри, бо треба його передавати тепер в цей метод.
+//        // Працює приблизно ось так - над цим класом робиться проксі, коли викликається метод перевіряється в проксі методі
+//        // чи був уже створений цей бін. Якщо був - то просто поверни його. Саме тому, що б я не передавав параметром далі
+//        // в викликах userService("2"), повернеться бін з тим параметром яким він був попередньо створений.
+//        UserService userService = userService2(user);
+//        log.info("2. Injected UserService " + userService);
+//        log.info("3. Injected UserService " + userService2("2")); // Не трігерне вивід з userService2(...), бо бін уже створений і проксі не запустить реальний метод.
+//        return new UnitService();
+//    }
 }
 

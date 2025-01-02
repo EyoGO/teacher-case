@@ -9,7 +9,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 /*There is no need to create own, because we already have predefined abstract handler - ResponseEntityExceptionHandler,
  so just inherit from it.*/
-@ControllerAdvice
+@ControllerAdvice(basePackages = "com.eyogo.http.controller") // Specify only server-rendered controllers,
+// all REST controllers will return 404, rather than error page
 @Slf4j
 public class ControllerExceptionHandler /*extends ResponseEntityExceptionHandler*/ {
 

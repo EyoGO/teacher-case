@@ -135,7 +135,7 @@ UnitRepository від Repository інтерфейсу. Спрінг сканув
         <!--        Adds transitive validation JSR-303 that contains @Email, @Size... validation annotations, implementations
         are provided by hibernate validation module.
         Just put annotations on DTO (and maybe parameters) and then add @Valid/@Validated annotation on bound controller parameter.
-        After that we will receive 4xx errors for non-valid. We can control it manualy and get errors adding BindingResult parameter right after validated object.
+        After that we will receive 4xx errors for non-valid. We can control it manually and get errors adding BindingResult parameter right after validated object.
         Using binding result we can print errors.
         Read RegistrationController next (exceptionHandler)
         -->
@@ -143,10 +143,17 @@ UnitRepository від Repository інтерфейсу. Спрінг сканув
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.7.0</version>
+        </dependency>
 
-<!--        This is an advanced auditing dependency (default holds fields modifiedBy createdAt... in AuditingEntity)
-        Envers works like GIT, it has revision Entity and has Date of revision and ID of revision, revision itself contains info about what data was changed.
-        For this create Revision entity.-->
+
+
+        <!--        This is an advanced auditing dependency (default holds fields modifiedBy createdAt... in AuditingEntity)
+                Envers works like GIT, it has revision Entity and has Date of revision and ID of revision, revision itself contains info about what data was changed.
+                For this create Revision entity.-->
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-envers</artifactId>

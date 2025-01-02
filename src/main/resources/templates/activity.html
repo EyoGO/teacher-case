@@ -77,8 +77,8 @@
                     // Initialize TinyMCE for the textarea with ID 'basic-example'tinymce.get('yourTextareaId').setContent(textFromBackend);
                     tinymce.init({
                         selector: 'textarea#basic-example',
-                        images_upload_url: /*[[@{/images}]]*/'WILL BE REPLACED',
-                        images_upload_base_path: /*[[@{/images}]]*/'WILL BE REPLACED',
+                        images_upload_url: '/api/v1/images',
+                        images_upload_base_path: '/api/v1/images',
                         skin: "oxide-dark",
                         content_css: "dark",
                         plugins: 'image link code',

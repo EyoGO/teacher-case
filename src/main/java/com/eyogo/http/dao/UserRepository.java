@@ -27,8 +27,6 @@ public interface UserRepository extends
 
     Optional<User> findById(Integer id);
 
-    User save(User entity);
-
     Optional<User> findByEmailAndPassword(String email, String password);
 
     @Query("""

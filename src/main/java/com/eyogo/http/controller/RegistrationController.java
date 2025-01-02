@@ -1,17 +1,15 @@
 package com.eyogo.http.controller;
 
 import com.eyogo.http.dto.UserCreateDto;
+import com.eyogo.http.dto.UserReadDto;
 import com.eyogo.http.entity.Gender;
 import com.eyogo.http.entity.Role;
-import com.eyogo.http.exception.ValidationException;
 import com.eyogo.http.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,17 +55,12 @@ public class RegistrationController {
                            @ModelAttribute @Valid UserCreateDto userDto,
 //                           BindingResult bindingResult, // NOTE: only after validated form parameter, otherwise not working
                            RedirectAttributes redirectAttributes) {
-        try {
 //            if (bindingResult.hasErrors()) {
 //                redirectAttributes.addFlashAttribute("user", userDto);
 //                redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
 //                return "redirect:/registration";
 //            }
-            userService.create(userDto);
-            return "redirect:/units";
-        } catch (ValidationException exception) {
-            model.addAttribute("errors", exception.getErrors());
-            return registrationPage(model, userDto);
-        }
+        userService.create(userDto);
+        return "redirect:/units";
     }
 }

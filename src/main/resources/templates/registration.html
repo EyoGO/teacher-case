@@ -4,7 +4,6 @@
     <link rel="stylesheet" type="text/css" th:href="@{/styles/unit.css}">
 </head>
 <body>
-<!--<img src="${pageContext.request.contextPath}/images/users/image.png" alt="User image"/>-->
 <form action="/registration" method="post" enctype="multipart/form-data" th:object="${user}">
     <label for="firstName">Ім'я:
         <input type="text" name="firstName" id="firstName" th:value="*{firstName}" required>
@@ -25,23 +24,13 @@
         <input type="password" name="password" id="passwordId" th:value="*{password}" required>
     </label><br>
     <select name="role" id="role" required>
-<!--        <option value="" disabled selected>Select a role</option>-->
         <option th:each="role : ${roles}" th:value="${role}" th:text="${role}" th:selected="${role.name() == user.role}"></option>
     </select>
-<!--    <select name="role" id="role" required>-->
-<!--        <c:forEach var="role" items="${requestScope.roles}">-->
-<!--            <option value="${role}">${role}</option>-->
-<!--        </c:forEach>-->
-<!--    </select>-->
     <br>
     <div th:each="gender : ${genders}">
         <input th:id="${gender}" type="radio" name="gender" th:value="${gender}" th:checked="${gender.name() == user.gender}" required>
         <label th:for="${gender}" th:text="${gender}"></label>
     </div>
-<!--    <c:forEach var="gender" items="${requestScope.genders}">-->
-<!--        <input type="radio" name="gender" value="${gender}" required> ${gender}-->
-<!--        <br>-->
-<!--    </c:forEach>-->
     <button type="submit">Підтвердити</button>
     <div th:if="${errors}" style="color: red">
         <div th:each="error : ${errors}" th:text="${error.defaultMessage}"></div>

@@ -1,31 +1,14 @@
 package com.eyogo.http.servlet;
 
-import com.eyogo.http.dto.UserReadDto;
-import com.eyogo.http.service.ImageService;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Part;
-import lombok.SneakyThrows;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 
 @WebServlet("/images" + "/*")
 @MultipartConfig
 public class ImageServlet extends HttpServlet {
 
-    private final ImageService imageService = ImageService.getInstance();
-
-    @Override
+    /*@Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Part file = request.getPart("file");
         String upload = imageService.upload("/data/user_" + ((UserReadDto) request.getSession().getAttribute("user")).getId() +
@@ -64,5 +47,5 @@ public class ImageServlet extends HttpServlet {
                 outputStream.write(currentByte);
             }
         }
-    }
+    }*/
 }

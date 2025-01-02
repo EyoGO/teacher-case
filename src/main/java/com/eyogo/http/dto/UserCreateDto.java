@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Value;
+import org.springframework.web.multipart.MultipartFile;
 
 @Value
 @Builder
@@ -23,7 +24,9 @@ public class UserCreateDto {
     @Size(min = 6)
     String password;
     String birthday;
-//    Part image; // TODO image processing
+    
+    MultipartFile image;
+
     String role;
     String gender;
 }
