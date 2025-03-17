@@ -16,10 +16,7 @@ import java.time.LocalDate;
 @Builder
 @Entity
 @Table(name = "users")
-@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED) // Enables envers, property excludes related entities from auditing.
-// In case we have List/Collection we need to add above it @NotAudited, otherwise we have to audit related
-// We have to create Revision table and User audit table to make it work. But we also can enable ddl auto in test resources not to waste time.
-// Besides that need to enable Envers in Audit configuration ->
+@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 public class User extends AuditingEntity<Integer> {
 
     @Id

@@ -36,11 +36,6 @@ public class ImageController {
     public byte[] getImage(@PathVariable String name) {
         return imageService.find(name)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-                /*.map(content -> ResponseEntity.ok()
-                        .headers(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                        .contentLength(content.available())
-                        .body(content))
-                .orElseGet(ResponseEntity.notFound()::build);*/
     }
 
 }

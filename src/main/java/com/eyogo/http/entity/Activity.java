@@ -22,7 +22,7 @@ public class Activity implements BaseEntity<Integer> {
     private Integer userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "unit_id") // по дефолту бере назву цього поля + ідентифікатор з залежної ентіті
+    @JoinColumn(name = "unit_id")
     private Unit unit;
 
     private String activityName;

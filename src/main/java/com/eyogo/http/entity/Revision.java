@@ -15,8 +15,7 @@ import org.hibernate.envers.RevisionTimestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@RevisionEntity // Must be single over application
-// It has 2 MANDATORY fields: ID, DATE. Take a look at AuditConfiguration. Now we have to add to Classes -> User for example.
+@RevisionEntity
 public class Revision {
 
     @Id

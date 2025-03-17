@@ -25,7 +25,6 @@ public class ImageService {
     public void upload(String image, InputStream content) {
         Path fullImagePath = Path.of(bucket, image);
 
-        // In our case it is just an image, so we can read whole InputStream. In case it is video we must write bytes from IS to OS with small packages.
         try (content) {
             Files.createDirectories(fullImagePath.getParent());
             Files.write(fullImagePath, content.readAllBytes(), CREATE, TRUNCATE_EXISTING);

@@ -26,17 +26,15 @@ public class CreateUserMapper implements Mapper<UserCreateDto, User> {
                 .firstName(object.getFirstName())
                 .lastName(object.getLastName())
                 .email(object.getEmail())
-//                .password(object.getPassword())
                 .birthday(LocalDateFormatter.format(object.getBirthday()))
-//                .image(IMAGE_FOLDER + File.separator + object.getEmail() + "_" + object.getImage().getName())
                 .role(Role.valueOf(object.getRole()))
                 .gender(Gender.valueOf(object.getGender()))
                 .build();
 
         Optional.ofNullable(object.getPassword())
-                        .filter(StringUtils::isNotBlank)
-                                .map(passwordEncoder::encode)
-                                        .ifPresent(user::setPassword);
+                .filter(StringUtils::isNotBlank)
+                .map(passwordEncoder::encode)
+                .ifPresent(user::setPassword);
 
         Optional.ofNullable(object.getImage())
                 .filter(Predicate.not(MultipartFile::isEmpty))

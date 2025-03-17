@@ -1,11 +1,11 @@
 package com.eyogo.http.service;
 
-import com.eyogo.http.repository.UserRepository;
 import com.eyogo.http.dto.UserCreateDto;
 import com.eyogo.http.dto.UserReadDto;
 import com.eyogo.http.mapper.CreateUserMapper;
 import com.eyogo.http.mapper.UserReadMapper;
 import com.eyogo.http.projection.UserNameProjection;
+import com.eyogo.http.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.security.core.userdetails.User;
@@ -33,11 +33,6 @@ public class UserService implements UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public Optional<UserReadDto> login(String email, String password) {
-        return userRepository.findByEmailAndPassword(email, password)
-                .map(userReadMapper::mapFrom);
-    }
-
     @SneakyThrows
     @Transactional
     public UserReadDto create(UserCreateDto userDto) {
@@ -46,8 +41,8 @@ public class UserService implements UserDetailsService {
                     uploadImage(dto.getImage());
                     return createUserMapper.mapFrom(dto);
                 })
-                .map(entity -> userRepository.save(entity))
-                .map(object -> userReadMapper.mapFrom(object))
+                .map(userRepository::save)
+                .map(userReadMapper::mapFrom)
                 .orElseThrow();
     }
 

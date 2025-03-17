@@ -16,9 +16,6 @@ import java.time.Instant;
 @Getter
 @Setter
 @MappedSuperclass
-// We would have to write own listener to update fields, but Spring is shipped with predefined listener for that purpose.
-// But it still does not know what fields to update, so we define it with annotations on fields
-// Then add corresponding fields to tables and start auditing mechanism for example in new AuditConfiguration
 @EntityListeners(AuditingEntityListener.class)
 public abstract class AuditingEntity<T extends Serializable> implements BaseEntity<T> {
 
@@ -28,7 +25,6 @@ public abstract class AuditingEntity<T extends Serializable> implements BaseEnti
     @LastModifiedDate
     private Instant modifiedAt;
 
-    // Next fields may have any type (we decide what type), so we have to say Spring how to convert values. Take a look at AuditingConfiguration
     @CreatedBy
     private String createdBy;
 

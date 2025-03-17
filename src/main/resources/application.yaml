@@ -1,34 +1,6 @@
 app:
-  description: ${app.name} is a Spring Boot application written by ${username:Unknown}
-  name: MyApp
   image:
     bucket: images
-db:
-  driver: org.postgresql.Driver
-  user: postgres
-  password: root
-  url: jdbc:postgresql://localhost:5432/postgres
-
-  pool:
-    size: 12
-    timeout: 10
-  properties:
-    first: 123
-    second: 456
-    third: Third
-  pools:
-    - size: 1
-      timeout: 1
-    - size: 2
-      timeout: 2
-    - size: 3
-      timeout: 3
-image:
-  base:
-    url: D:/Software/Tools/javaWorkspace/teacher-case/images
-test:
-  full:
-    message: ${db.driver} AHAHA
 
 spring:
   datasource:
@@ -42,11 +14,6 @@ spring:
       format_sql: true
       hbm2ddl: validate
     open-in-view: false #database queries can/can't be performed during view rendering. when TRUE, then transactions open on view, to disable set FALSE
-  #      default_schema: teacher-case
-  mvc:
-    view:
-      prefix: /WEB-INF/jsp/
-      suffix: .jsp
   mail:
     host: smtp.gmail.com
     username: ${SPRING_MAIL_USERNAME}
@@ -61,8 +28,6 @@ spring:
 logging:
   level:
     root: INFO
-    com.eyogo.http.ApplicationRunner: INFO #OFF
-    org.springframework.security: DEBUG
   file:
     name: eyo.log
     path: /
