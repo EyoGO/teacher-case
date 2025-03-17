@@ -1,6 +1,6 @@
 package com.eyogo.http.controller;
 
-import com.eyogo.http.dao.UnitRepository;
+import com.eyogo.http.repository.UnitRepository;
 import com.eyogo.http.dto.UnitReadDto;
 import com.eyogo.http.dto.UserReadDto;
 import com.eyogo.http.entity.Gender;

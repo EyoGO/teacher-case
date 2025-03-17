@@ -1,9 +1,8 @@
 package com.eyogo.http.integration.database.repository;
 
-import com.eyogo.http.dao.UnitRepository;
+import com.eyogo.http.repository.UnitRepository;
 import com.eyogo.http.entity.Unit;
 import com.eyogo.http.integration.IntegrationTestBase;
-import com.eyogo.http.integration.annotation.IT;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
@@ -11,7 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.annotation.Rollback;
 
 import java.util.List;
 import java.util.Optional;

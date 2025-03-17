@@ -1,20 +1,15 @@
 package com.eyogo.http.controller;
 
-import com.eyogo.http.dto.UserReadDto;
-import com.eyogo.http.entity.Role;
 import com.eyogo.http.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
+import org.springframework.web.bind.annotation.GetMapping;
 
 // When we return String value (JSP), then in fact DispatcherServlet executes either forward or include by default.
 // We can override that adding prefix forward: or include: before returning value. BUT it will disable ViewResolver and we are required to specify full JSP path like in POST comment.
 // BUT redirect is much more flexible, because we specify not the JSP, but path (URL) to redirect and we can use it like in POST.
 @Controller
-@SessionAttributes({"user", "useCascade", "selectedUserId"})
+//@SessionAttributes({"user", "useCascade", "selectedUserId"})
 @RequiredArgsConstructor
 public class LoginController {
 
@@ -25,7 +20,8 @@ public class LoginController {
         return "login";
     }
 
-    @PostMapping("/login")
+    //Provided by Spring Security
+    /*@PostMapping("/login")
 //    public String login(Model model, @ModelAttribute("myUnitAttribute") GetUnitDto getUnitDto) {
     public String login(Model model,
                         @RequestParam String email,
@@ -52,6 +48,6 @@ public class LoginController {
 //        return "user/login";
 //        return "redirect:https://google.com";
 //        return "redirect:/login";
-    }
+    }*/
 
 }

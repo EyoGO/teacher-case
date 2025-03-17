@@ -25,13 +25,6 @@ public class UnitController {
         return "unit";
     }
 
-    @GetMapping("/{id}")
-    public String findById(@PathVariable("id") Integer id, Model model) {
-        model.addAttribute("unit", unitService.findById(id).get()); // TODO what if null
-        return "singleunit";
-    }
-
-    // TODO remove it and at least create separate requests
     @PostMapping
     public String post(Model model,
                        @SessionAttribute UserReadDto user,

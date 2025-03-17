@@ -1,11 +1,9 @@
 package com.eyogo.http.service;
 
-import com.eyogo.http.dao.UnitRepository;
+import com.eyogo.http.repository.UnitRepository;
 import com.eyogo.http.dto.UnitReadDto;
 import com.eyogo.http.entity.Unit;
-import com.eyogo.http.mapper.UserReadMapper;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,21 +13,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UnitService {
 
-    private static final UnitService INSTANCE = new UnitService();
-
-    @Autowired
-    private UnitRepository unitRepository;
-
-    //TODO Deprecated
-    public UnitService() {
-    }
-
-    @Autowired
-    public UnitService(UnitRepository unitRepository) {
-        this.unitRepository = unitRepository;
-    }
+    private final UnitRepository unitRepository;
 
     public List<UnitReadDto> findAll() {
         List<Unit> units = unitRepository.findAll();
@@ -73,12 +60,7 @@ public class UnitService {
         return unitById.map(unit -> UnitReadDto.builder()
                 .id(unit.getId())
                 .name(unit.getUnitName())
-                .descendants(null)//TODO consider this, maybe need new DTO
                 .managedByAdmin(unit.getManagedByAdmin())
                 .build());
-    }
-
-    public static UnitService getInstance() {
-        return INSTANCE;
     }
 }

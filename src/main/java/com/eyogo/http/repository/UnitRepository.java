@@ -1,4 +1,4 @@
-package com.eyogo.http.dao;
+package com.eyogo.http.repository;
 
 import com.eyogo.http.entity.Unit;
 import org.springframework.data.domain.Page;

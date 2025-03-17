@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  app:
+    image: teacher-case
+    container_name: teacher-case
+    depends_on:
+      - teacher-case-postgres
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    networks:
+      - teacher-case
+    ports:
+      - "8080:8080"
+
+  teacher-case-postgres:
+    image: postgres:15
+    container_name: teacher-case-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME}
+      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    networks:
+      - teacher-case
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+
+networks:
+  teacher-case:
+    driver: bridge

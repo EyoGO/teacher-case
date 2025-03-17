@@ -1,8 +1,8 @@
 package com.eyogo.http.service;
 
-import com.eyogo.http.dao.ActivityRepository;
-import com.eyogo.http.dao.UnitRepository;
-import com.eyogo.http.dao.UserRepository;
+import com.eyogo.http.repository.ActivityRepository;
+import com.eyogo.http.repository.UnitRepository;
+import com.eyogo.http.repository.UserRepository;
 import com.eyogo.http.dto.ActivityCreateEditDto;
 import com.eyogo.http.dto.ActivityReadDto;
 import com.eyogo.http.entity.Activity;
@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -65,64 +66,44 @@ public class ActivityService {
         activityRepository.deleteById(id);
     }
 
-    public List<ActivityReadDto> findAll() {
-//        List<Activity> allActivities = activitiyDao.findAll();
-//        return allActivities.stream()
-//                .map(activity -> GetActivityDto.builder()
-//                        .id(activity.getId())
-//                        .user(userRepository.findById(activity.getUserId()).map(getUserMapper::mapFrom).orElse(null))//TODO maybe just pass userID
-//                        .name(activity.getActivityName())
-//                        .description(activity.getDescription())
-//                        .author(userRepository.findById(activity.getAuthorId()).map(getUserMapper::mapFrom).orElse(null))//TODO maybe just pass userID
-//                        .build())
-//                .collect(Collectors.toList());
-        return List.of();
-    }
-
-    public Optional<ActivityReadDto> findStrictedDataById(Integer activityId) {
+    public Optional<ActivityReadDto> findActivityById(Integer activityId) {
         Optional<Activity> activitiyOptional = activityRepository.findById(activityId);
         return activitiyOptional.map(activity -> ActivityReadDto.builder()
                 .id(activity.getId())
                 .name(activity.getActivityName())
                 .description(activity.getDescription())
+                .authorId(activity.getAuthorId())
                 .build());
     }
 
-    public List<ActivityReadDto> findByUserId(Integer userId) {
-//        List<Activity> allActivitiesOfUser = activitiyDao.findByUser(userId);
-//        return allActivitiesOfUser.stream()
-//                .map(activity -> GetActivityDto.builder()
-//                        .id(activity.getId())
-//                        .user(userRepository.findById(activity.getUserId()).map(getUserMapper::mapFrom).orElse(null))//TODO maybe just pass userID
-//                        .name(activity.getActivityName())
-//                        .description(activity.getDescription())
-//                        .author(userRepository.findById(activity.getAuthorId()).map(getUserMapper::mapFrom).orElse(null))//TODO maybe just pass userID
-//                        .build())
-//                .collect(Collectors.toList());
-        return List.of();
-    }
-
     public List<ActivityReadDto> findByUserAndUnitId(Integer userId, Integer unitId, boolean useCascade) {
-        List<Activity> allActivitiesOfUserByUnit = activityRepository.findByUserIdAndUnitIdOrderById(userId, unitId);
+        List<Activity> allActivitiesOfUserByUnit;
         if (useCascade) {
-            fetchCascade(userId, unitId, allActivitiesOfUserByUnit);
+            List<Integer> unitIds = new LinkedList<>();
+            unitIds.add(unitId);
+            fetchCascadeIds(unitId, unitIds);
+            allActivitiesOfUserByUnit = activityRepository.findByUserIdAndUnitIdInOrderById(userId, unitIds);
+        } else {
+            allActivitiesOfUserByUnit = activityRepository.findByUserIdAndUnitIdOrderById(userId, unitId);
         }
         return allActivitiesOfUserByUnit.stream()
                 .map(activity -> ActivityReadDto.builder()
                         .id(activity.getId())
-                        .user(userRepository.findById(activity.getUserId()).map(userReadMapper::mapFrom).orElse(null))//TODO maybe just pass userID
+                        .user(activity.getUserId())
                         .name(activity.getActivityName())
                         .description(activity.getDescription())
-                        .author(userRepository.findById(activity.getAuthorId()).map(userReadMapper::mapFrom).orElse(null))//TODO maybe just pass userID
+                        .authorId(activity.getAuthorId())
                         .build())
                 .collect(Collectors.toList());
     }
 
-    private void fetchCascade(Integer userId, Integer unitId, List<Activity> allActivitiesOfUserByUnit) {//TODO try using batch SQL query (accumulate queries)
-        List<Unit> subUnits = unitRepository.findAllByParentId(unitId);
-        for (Unit unit: subUnits) {
-            allActivitiesOfUserByUnit.addAll(activityRepository.findByUserIdAndUnitIdOrderById(userId, unit.getId()));
-            fetchCascade(userId, unit.getId(), allActivitiesOfUserByUnit);
+    private void fetchCascadeIds(Integer unitId, List<Integer> unitsIds) {
+        List<Integer> newIds = unitRepository.findAllByParentId(unitId).stream()
+                .map(Unit::getId)
+                .toList();
+        unitsIds.addAll(newIds);
+        for (Integer id: newIds) {
+            fetchCascadeIds(id, unitsIds);
         }
     }
 }

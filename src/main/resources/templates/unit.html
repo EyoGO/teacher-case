@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Units</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/styles/unit.css}">
+    <title>Розділи</title>
+    <link rel="stylesheet" type="text/css" th:href="@{css/unit.css}">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -22,8 +22,8 @@
     </script>
 </head>
 <body>
-<!--    <%@include file="header.jsp"%>-->
-    <form method="post">
+<div th:insert="~{fragments :: header}"></div>
+    <form th:action="@{/units}" method="post">
         <div th:if="${session.user.role == T(com.eyogo.http.entity.Role).ADMIN}">
             <label for="userSelector">Виберіть користувача:</label>
             <select name="userToWatch" id="userSelector">
@@ -43,7 +43,6 @@
     </form>
 
 <h1>Розділи:</h1>
-<div th:replace="fragments :: unitFragment (${units})"></div>
-<!--<myTags:units units="${requestScope.units}"/>-->
+<div th:replace="~{fragments :: unitFragment (${units})}"></div>
 </body>
 </html>

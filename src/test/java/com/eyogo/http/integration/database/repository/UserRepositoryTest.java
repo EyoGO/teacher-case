@@ -1,6 +1,6 @@
 package com.eyogo.http.integration.database.repository;
 
-import com.eyogo.http.dao.UserRepository;
+import com.eyogo.http.repository.UserRepository;
 import com.eyogo.http.dto.UserReadDto;
 import com.eyogo.http.dto.GetUserDto2;
 import com.eyogo.http.entity.Gender;

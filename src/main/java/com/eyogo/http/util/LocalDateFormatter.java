@@ -9,7 +9,6 @@ import java.util.Optional;
 
 @UtilityClass
 public class LocalDateFormatter {
-    //TODO will be used in validation and user creation (when new mapper UserDto->User will be added)
 
     private static final String PATTERN = "yyyy-MM-dd";
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(PATTERN);

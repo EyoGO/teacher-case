@@ -1,17 +1,14 @@
 <!DOCTYPE HTML>
-<!--<%&#45;&#45;<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>&#45;&#45;%>-->
-<!--<%&#45;&#45;<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>&#45;&#45;%>-->
-<!--<%&#45;&#45;<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>&#45;&#45;%>-->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Title</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/styles/unit.css}">
-    <script src="../libs/tinymce/js/tinymce/tinymce.min.js"
+    <title>Активності</title>
+    <link rel="stylesheet" type="text/css" th:href="@{css/unit.css}">
+    <script th:src="@{js/tinymce/js/tinymce/tinymce.min.js}"
             referrerpolicy="origin"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script th:src="@{js/jquery-3-7-1.min.js}"></script>
 </head>
 <body>
-<!--<%&#45;&#45;<%@include file="header.jsp" %>&#45;&#45;%>-->
+<div th:insert="~{fragments :: header}"></div>
 <a th:href="@{/units}">⇦</a>
 <h1 th:text="${session.unit.name}"></h1>
 <h2>Список активностей:</h2>
@@ -19,122 +16,106 @@
 <table>
     <th>Назва активності</th>
     <th>Опис</th>
-<!--    <c:forEach var="activity" items="${requestScope.activities}">-->
-        <tr th:each="activity : ${activities}">
-            <td th:text="${activity.name}"></td>
-            <td th:utext="${activity.description}"></td>
-            <th:block th:if="${session.unit.managedByAdmin ? session.user.role == T(com.eyogo.http.entity.Role).ADMIN : session.selectedUserId == session.user.id}">
-                <td class="activityTableDataWithButton">
-                    <button type="button"
-                            th:onclick="setUpdateFormValues([[${activity.id}]], [[${activity.name}]], [[${param.get('unit-id')}]])" th:text="Змінити">
-                    </button>
-                </td>
-                <td class="activityTableDataWithButton">
-<!--                    <form onSubmit="if(!confirm('Дійсно видалити запис з назвою ${activity.name}?')){return false;}"-->
-                    <form th:onsubmit="return confirm('Дійсно видалити запис з назвою ' + [[${activity.name}]] + '?');"
-                          th:action="@{/activities(activityId=${activity.id}, action='delete')}"
-                          method="post">
-                        <input type="submit" name="delete" value="Видалити"/>
-                    </form>
-                </td>
-<!--                <%&#45;&#45;                Не давати Update кнопку, якщо ти не автор і заборонити це на бекенді&#45;&#45;%>-->
-            </th:block>
-        </tr>
-<!--    </c:forEach>-->
-    <th:block th:if="${session.unit.managedByAdmin ? session.user.role == T(com.eyogo.http.entity.Role).ADMIN : session.selectedUserId == session.user.id}">
-        <tr>
-            <td>
-                <button id="openPopup">Додати активність</button>
-
-                <div id="popup" class="popup">
-                    <div class="popup-content">
-                        <span class="close" id="closePopup">&times;</span>
-                        <h2 id="popupHeading">Додавання активності</h2>
-                        <form id="popupForm"
-                              th:action="@{/activities(unit-id=${param.get('unit-id')}, action='add')}"
-                              method="post">
-                            <label for="name">Назва активності:</label>
-                            <input type="text" id="name" name="activityName" required>
-                            <br>
-                            <textarea id="basic-example" name="description"></textarea>
-                            <button type="submit">Submit</button>
-                        </form>
-                    </div>
-                </div>
-                <script>
-                    document.getElementById("openPopup").addEventListener("click", function () {
-                        tinymce.get('basic-example').setContent(``);
-                        document.getElementById("popupHeading").innerText = `Додавання активності`;
-                        document.getElementById("name").value = ``;
-                        // document.getElementById("popupForm").action = /*[[@{/activities(unit-id=${param.get('unit-id')}, action='add')}]]*/'';
-                        document.getElementById("popup").style.display = "block";
-                    });
-
-                    document.getElementById("closePopup").addEventListener("click", function () {
-                        document.getElementById("popup").style.display = "none";
-                    });
-
-                    // Initialize TinyMCE for the textarea with ID 'basic-example'tinymce.get('yourTextareaId').setContent(textFromBackend);
-                    tinymce.init({
-                        selector: 'textarea#basic-example',
-                        images_upload_url: '/api/v1/images',
-                        images_upload_base_path: '/api/v1/images',
-                        skin: "oxide-dark",
-                        content_css: "dark",
-                        plugins: 'image link code',
-                        toolbar: 'undo redo | bold italic | image link',
-                        // language: 'uk'
-                    });
-
-                    function setUpdateFormValues(activityId, activityName, unitId) {
-                        fetchRecordData(activityId)
-                            .then(recordData => {
-                                console.log(recordData);
-                                tinymce.get('basic-example').setContent(recordData.description);
-                                console.log('1');
-                                document.getElementById("popupHeading").innerText = `Редагування активності`;
-                                console.log('2');
-                                document.getElementById("name").value = activityName;
-                                console.log('3');
-                                document.getElementById("popupForm").action = '/activities?unit-id=' + unitId + '&action=update&activityId=' + activityId;
-                                console.log('4');
-                                document.getElementById("popup").style.display = "block";
-                                console.log('5');
-                            })
-                            .catch(error => {
-                                console.error('Error loading record for edit:', error);
-                            });
-                    }
-
-                    function fetchRecordData(recordId) {
-                        // Perform an AJAX request to fetch the record data
-                        return fetch('activities/' + recordId, {
-                            method: 'GET',
-                            headers: {
-                                'Accept': 'application/json',
-                            },
-                        })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error(`Failed to fetch record data for record ID ` + recordId);
-                                }
-                                console.log(response)
-                                return response.json();
-                            });
-                    }
-
-                    // document.getElementById("popupForm").addEventListener("submit", function (e) {
-                    //     e.preventDefault();
-                    //     // Add your form submission logic here
-                    //     // You can access form fields using e.target
-                    //     // e.target.name.value and e.target.email.value
-                    //     // Close the popup when the form is submitted
-                    //     document.getElementById("popup").style.display = "none";
-                    // });
-                </script>
+    <tr th:each="activity : ${activities}">
+        <td th:text="${activity.name}"></td>
+        <td th:utext="${activity.description}"></td>
+        <th:block
+                th:if="${activity.authorId == session.user.id}">
+            <td class="activityTableDataWithButton">
+                <button type="button"
+                        th:onclick="setUpdateFormValues([[${activity.id}]], [[${activity.name}]], [[${param.get('unit-id')}]])"
+                        th:text="Змінити">
+                </button>
             </td>
-        </tr>
-    </th:block>
+            <td class="activityTableDataWithButton">
+                <form th:onsubmit="return confirm('Дійсно видалити запис з назвою ' + [[${activity.name}]] + '?');"
+                      th:action="@{/activities(activityId=${activity.id}, action='delete')}"
+                      method="post">
+                    <input type="submit" name="delete" value="Видалити"/>
+                </form>
+            </td>
+        </th:block>
+    </tr>
+    <tr th:if="${session.unit.managedByAdmin ? session.user.role == T(com.eyogo.http.entity.Role).ADMIN : session.selectedUserId == session.user.id}">
+        <td>
+            <button id="openPopup">Додати активність</button>
+
+            <div id="popup" class="popup">
+                <div class="popup-content">
+                    <span class="close" id="closePopup">&times;</span>
+                    <h2 id="popupHeading">Додавання активності</h2>
+                    <form id="popupForm"
+                          th:action="@{/activities(unit-id=${param.get('unit-id')}, action='add')}"
+                          method="post">
+                        <label for="name">Назва активності:</label>
+                        <input type="text" id="name" name="activityName" required>
+                        <br>
+                        <textarea id="basic-example" name="description"></textarea>
+                        <button type="submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+            <script>
+                document.getElementById("openPopup").addEventListener("click", function () {
+                    tinymce.get('basic-example').setContent(``);
+                    document.getElementById("popupHeading").innerText = `Додавання активності`;
+                    document.getElementById("name").value = ``;
+                    document.getElementById("popup").style.display = "block";
+                });
+
+                document.getElementById("closePopup").addEventListener("click", function () {
+                    document.getElementById("popup").style.display = "none";
+                });
+
+                tinymce.init({
+                    selector: 'textarea#basic-example',
+                    images_upload_url: '/api/v1/images',
+                    images_upload_base_path: '/api/v1/images',
+
+                    skin: "oxide-dark",
+                    content_css: "dark",
+                    plugins: 'image link code',
+                    toolbar: 'undo redo | bold italic | image link',
+                });
+
+                function setUpdateFormValues(activityId, activityName, unitId) {
+                    fetchRecordData(activityId)
+                        .then(recordData => {
+                            console.log(recordData);
+                            tinymce.get('basic-example').setContent(recordData.description);
+                            console.log('1');
+                            document.getElementById("popupHeading").innerText = `Редагування активності`;
+                            console.log('2');
+                            document.getElementById("name").value = activityName;
+                            console.log('3');
+                            document.getElementById("popupForm").action = '/activities?unit-id=' + unitId + '&action=update&activityId=' + activityId;
+                            console.log('4');
+                            document.getElementById("popup").style.display = "block";
+                            console.log('5');
+                        })
+                        .catch(error => {
+                            console.error('Error loading record for edit:', error);
+                        });
+                }
+
+                function fetchRecordData(recordId) {
+                    return fetch('activities/' + recordId, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                        },
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`Failed to fetch record data for record ID ` + recordId);
+                            }
+                            console.log(response)
+                            return response.json();
+                        });
+                }
+            </script>
+        </td>
+    </tr>
 </table>
 </body>
 </html>

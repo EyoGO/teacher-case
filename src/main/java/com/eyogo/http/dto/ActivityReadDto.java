@@ -8,8 +8,8 @@ import lombok.Value;
 @Value
 public class ActivityReadDto {
     Integer id;
-    UserReadDto user;
+    Integer user;
     String name;
     String description;
-    UserReadDto author;
+    Integer authorId;
 }

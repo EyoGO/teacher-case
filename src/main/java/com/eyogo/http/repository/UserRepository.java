@@ -1,4 +1,4 @@
-package com.eyogo.http.dao;
+package com.eyogo.http.repository;
 
 import com.eyogo.http.dto.GetUserDto2;
 import com.eyogo.http.entity.Role;
@@ -57,6 +57,8 @@ public interface UserRepository extends
                    "WHERE role = :#{#role.name()}",
             nativeQuery = true)
     List<GetUserDto2> findAllByRole(Role role);
+
+    Optional<User> findByEmail(String email);
 
     // When we need to add custom repository, then we create new interface FilterRepository (with findByFilter(Filter f) declaration),
     // then we create FilterRepositoryImpl (Impl postfix is crucial and will contain EntityManager and some Criteria API filtering) implementation.

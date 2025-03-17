@@ -17,7 +17,7 @@ public class ImageService {
 
     private final String bucket;
 
-    public ImageService(@Value("${app.image.bucket:D:\\Software\\Tools\\javaWorkspace\\teacher-case\\images}") String bucket) {
+    public ImageService(@Value("${app.image.bucket}") String bucket) {
         this.bucket = bucket;
     }
 

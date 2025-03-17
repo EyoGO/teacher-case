@@ -1,6 +1,6 @@
 package com.eyogo.http.service;
 
-import com.eyogo.http.dao.UnitRepository;
+import com.eyogo.http.repository.UnitRepository;
 import com.eyogo.http.dto.UnitReadDto;
 import com.eyogo.http.entity.Unit;
 import org.junit.jupiter.api.Assertions;

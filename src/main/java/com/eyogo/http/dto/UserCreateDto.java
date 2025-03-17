@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Value
 @Builder
 public class UserCreateDto {
-//    String id;
     @NotBlank
     String firstName;
 
@@ -20,8 +19,8 @@ public class UserCreateDto {
     @Email
     String email;
 
-    @NotBlank
-    @Size(min = 6)
+//    @NotBlank(groups = CreateAction.class) //TODO: only on create it must be filled, operations like update must not require it
+//    @Size(min = 6)//TODO handle exception
     String password;
     String birthday;
     

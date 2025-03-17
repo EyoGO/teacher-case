@@ -12,11 +12,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice(basePackages = "com.eyogo.http.controller") // Specify only server-rendered controllers,
 // all REST controllers will return 404, rather than error page
 @Slf4j
-public class ControllerExceptionHandler /*extends ResponseEntityExceptionHandler*/ {
+public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
-    public String handleException(Exception ex, HttpServletRequest request) {
-        log.error("Failed to return response", ex);
-        return "error/error500";
-    }
+//    @ExceptionHandler(Exception.class)
+//    public String handleException(Exception ex, HttpServletRequest request) {
+//        log.error("Failed to return response to {} request:", request.getRequestURI(), ex);
+//        return "error/error500";
+//    }
 }

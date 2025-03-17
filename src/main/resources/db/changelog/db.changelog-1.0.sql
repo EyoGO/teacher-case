@@ -1,7 +1,5 @@
 --liquibase formatted sql
 
--- TODO role_id will replace it
--- TODO gender_id will replace it
 --changeset eyogo:1
 CREATE TABLE users
 (
@@ -19,8 +17,6 @@ CREATE TABLE users
 );
 --rollback DROP TABLE users;
 
--- TODO test UNIQUE constraint and handle it on server
--- TODO consider cascade delete
 --changeset eyogo:2
 CREATE TABLE unit
 (
@@ -33,7 +29,6 @@ CREATE TABLE unit
 );
 --rollback DROP TABLE unit;
 
--- TODO consider ordering
 --changeset eyogo:3
 CREATE TABLE activity
 (

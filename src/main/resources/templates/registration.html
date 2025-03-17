@@ -1,10 +1,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Title</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/styles/unit.css}">
+    <title>Реєстрація користувачів</title>
+    <link rel="stylesheet" type="text/css" th:href="@{css/unit.css}">
 </head>
 <body>
-<form action="/registration" method="post" enctype="multipart/form-data" th:object="${user}">
+<form th:action="@{/registration}" method="post" enctype="multipart/form-data" th:object="${user}">
     <label for="firstName">Ім'я:
         <input type="text" name="firstName" id="firstName" th:value="*{firstName}" required>
     </label><br>
@@ -17,11 +17,11 @@
     <label for="imageId">Зображення:
         <input type="file" name="image" id="imageId">
     </label><br>
-    <label for="emailId">Email:
+    <label for="emailId">Електронна адреса:
         <input type="text" name="email" id="emailId" th:value="*{email}" required>
     </label><br>
     <label for="passwordId">Пароль:
-        <input type="password" name="password" id="passwordId" th:value="*{password}" required>
+        <input type="password" name="password" id="passwordId" required>
     </label><br>
     <select name="role" id="role" required>
         <option th:each="role : ${roles}" th:value="${role}" th:text="${role}" th:selected="${role.name() == user.role}"></option>

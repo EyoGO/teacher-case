@@ -21,7 +21,7 @@ public class UserReadDto {
     String lastName;
     String email;
 
-    @JsonAdapter(LocalDateTypeAdapter.class)//TODO maybe remove
+    @JsonAdapter(LocalDateTypeAdapter.class)
     LocalDate birthday;
     String image;
     Role role;

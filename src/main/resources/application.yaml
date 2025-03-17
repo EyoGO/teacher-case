@@ -1,6 +1,8 @@
 app:
   description: ${app.name} is a Spring Boot application written by ${username:Unknown}
   name: MyApp
+  image:
+    bucket: images
 db:
   driver: org.postgresql.Driver
   user: postgres
@@ -30,9 +32,9 @@ test:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: root
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/postgres}
+    username: ${SPRING_DATASOURCE_URL:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:root}
     driver-class-name: org.postgresql.Driver
   jpa:
     properties.hibernate:
@@ -45,12 +47,22 @@ spring:
     view:
       prefix: /WEB-INF/jsp/
       suffix: .jsp
-
+  mail:
+    host: smtp.gmail.com
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true
 
 logging:
   level:
     root: INFO
     com.eyogo.http.ApplicationRunner: INFO #OFF
+    org.springframework.security: DEBUG
   file:
     name: eyo.log
     path: /
