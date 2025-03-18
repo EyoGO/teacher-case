@@ -4,10 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.4.0</version>
+    </parent>
+
     <groupId>com.eyogo</groupId>
     <artifactId>teacher-case</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <version>2.0</version>
+    <packaging>jar</packaging>
 
     <properties>
         <maven.compiler.source>18</maven.compiler.source>
@@ -16,12 +22,211 @@
     </properties>
 
     <dependencies>
+    <!--    spring-boot-starter тягнеться транзитивно з усіх стартерів, тому не треба його явно вказувати-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-starter</artifactId>-->
+        <!--        </dependency>-->
+
         <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.0.0</version>
-            <scope>provided</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
+
+
+<!--        Spring Data JPA надає нам 3 основні бонуси - автоконфігурацію (1), роботу з транзакціями (2), роботу з DAO (3):-->
+
+        <!--(1) Клас автоконфігурації - HibernateJpaAutoConfiguration
+        Він має кондішн он клас HibernateJpaAutoConfiguration - що в Hibernate є EntityManagerFactory та другий
+        EntityManager (обгортака над конекшнами). Він має свої проперті JpaProperties з префіксом spring.jpa
+        Крім цього є @AutoConfiguration after=DataSourceAutoConfiguration - це сортує автоконфігурації й змушує
+        поточну запускатись після DataSourceAutoConfiguration.
+        DataSourceAutoConfiguration своєю чергою перевірить чи є в classpath DataSource - інтерфейс з javax.sql
+        з методом Connection getConnection() і намагатиметься створити пул конекшнів цього DataSource. Робитиме він
+        це імпортувавши конфіги для різних конекшн пулів: Hikari, Tomcat,... У кожному з них умова
+        на classpath відповідного класу ...Hikari... і відсутності біна DataSource.
+
+        Тобто маємо окремо проперті 2 автоконфігів - DataSourceAutoConfiguration spring.datasource для конекшн пула
+        HibernateJpaAutoConfiguration spring.jpa для JPA
+        По дефолту юзатиметься Hikari pool-->
+
+<!--        2) Для транзакцій існує TransactionManager, який конфігурцється в JpaBaseConfiguration
+Його можна використовувати 2 способами - вручну через TransactionTemplate відкривати закривати та через
+анотацію @Transactional (працює лише для public) (спрінговою, тобто не з javax.transaction). Без додавання над інтеграційним тестом @Transactional
+на сутностях, наприклад entityManager.find(Activity.class, 1) буде проксі всередині ні залежну сутність які викидатимуть
+LazyInitializationException, тому що на операцію find відкривається транзакція й закривається, а з нею сесія, яка відповідальна
+за витягування проксі. Завдяки @Transactional в тестах додається TransactionalTestExecutionListener який має методи beforeTestMethod
+та afterTestMethod. before визначає TransactionManager методом getTransactionManager(...) ЦЕ КРАЩЕ В ДЕБАЗІ ГЛЯНУТИ САМОМУ.
+Крім цього, перед запуском методу цей лістенер запускає @BeforeTransaction та @AfterTransaction методи - нові цикли для JUnit.
+
+Для транзакцій є свій автоконфігуратор TransactionAutoConfiguration - там опис який підхід проксі буде використаний.
+Потрібно уявляти ще ситуацію з CGLib proxy для транзакцій - вони обгортають методи. АЛЕ якщо один метод, наприклад нашого @Transactional
+сервісу викликає інший метод, то транзакція для викликаного методу не запуститься, бо ми працюємо в цьому випадку в рамках не проксі,
+а нашого сервісу й ніяких додаткових обробок не буде. Проте, якщо наш метод викликає метод іншого сервіса (який уже є проксі), тоді
+ми викличемо проксі метод, але по дефолту транзакція не відкривається і не закривається, бо відкриття і закриття йде від зовнішнього метода,
+всі інші тільки відстежувати чи була відкрита і якщо не була то відкриють транзакцію. Саме на такій взаємодії проксі будується PROPAGATION
+стратегія.
+
+@Transactional має багато налаштувань
+-value/transactionManager - можна додати багато transaction managerів, але як правило 1
+-propagation -  Propagation.REQUIRED (default) - проксі не бачить транзакцію - відкриває
+                Propagation.SUPPORTS - немає транзакцій - не відкривай (нічого не робить)
+                Propagation.MANDATORY - не бачить транзакцію - кидає ексепшн, тобто теж відкривати не вміє
+                Propagation.REQUIRES_NEW - завжди відкриває нову транзакцію (новий конекшн і нова сесія з кешем)
+                            якщо внутрішній метод помітити цим, то він відкриє нову транзакцію, а той хто викликав його чекатиме
+                            виконання, але для виконання треба з пула дістати нову транзакцію (конекшн з пула, що може привести до дедлоків),
+                            тому що не можна відкрити декілька транзакцій в одному з'єднанні. І тут на новий конекшн буде нова сесія і новий кеш для сесії.
+                Propagation.NOT_SUPPORTED - виконується завжди поза транзакцією, якщо транзакція була - зупини її (тільки коли треба, щоб не ролбекнувся результат при exception)
+                Propagation.NEVER - поза транзакціями, якщо відкрита кидає exception
+                Propagation.NESTED - тільки для JDBC, бо використовує savePoint() - все що зберегли закомітиться.
+-isolation - рівень ізоляції, виставляється в момент створення, тобто якщо внутрішні виклики проксі юзають зовнішню транзакцію, то і ізоляція з зовнішньої
+-readonly - якщо немає зміни даних, то це оптимізація 1) на рівні бази даних, 2) на рівні java (не відбувається flush сесії)
+-rollbackFor - при яких exception робити роллбек (по дефолту RuntimeException, Error, вручну треба вказувати checked)
+-->
+
+
+<!--        3) Появляється зручна робота з репозиторіями. Не потрібно самому писати DAO, а достатньо успадкувати нащ інтерфейс
+UnitRepository від Repository інтерфейсу. Спрінг скануватиме такі класи й автогенеруватиме для них код на основі імен (делі детальніше).
+АЛЕ репозиторії працюють і без Spring BOOT, він просто дає нам автоконфігурацію JpaRepositoriesAutoConfiguration (він імпортить ще JpaRepositoriesImportSelector),
+яка автоматично енейблить репозиторії та багато іншого, як от реєстрація репозіторі інтерфейсів і створення бін дефінішнів на основі репозіторі,
+які після життєвого циклу створиться шар репозіторі. Якби не було автоконфігурації (BOOT), то треба було б використовувати
+@EnableJpaRepositories(в якому пакети репозіторі, як найменувати, які реалізації, ...). детальніше дивитись в JpaRepositoriesImportSelector, а в ньому в ...Registrar.
+
+-->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!--        Enables autoconfiguration WebMvcAutoConfiguration that gives server, spring.mvc, spring.web properties and starts.
+                    Take a look at DispatcherServlet lesson and @RequestMapping. (DispatcherServlet.doDispatch()) non daemon thread for embedded tomcat.-->
+
+        <!-- Now application is started using WebApplicationContext
+        Start from flow: HTTP request comes to DispatcherServlet, where it defines a mappedHandler - controller (they also have interceptors around),
+         then handlerAdapter (argument resolver, return value handler,...) is found. Then handlerAdapter handles
+         input request and returns ModelAndView, which is rendered or just returned in case view is null (@RestController).
+         Besides that it handles all Exceptions and stores them to process further using Exception resolvers.-->
+
+        <!--        So we have 3 layers - Controller, Model, View. We will start without Model:
+                There will be controller that handles http request by some path and returns a page (view, for JSP added Jasper dependency).
+                We can set default prefix and postfix to specify location of our views and extensions using spring.-->
+
+<!--        FORMATTER. THERE are 3 ways to define date format:
+    1) Property spring.mvc.format.date: iso
+    2) Manually in Entity class add @DateTimeFormat(pattern="yyyy-mm-dd")
+    3) Create own WebConfiguration implements WebMvcConfigurer. After that we can adjust almost everything like
+    @Override addFormatters(... registry) {registry.addConverter(Jsr310Converters.StringToLocalDateConverter.INSTANCE)}
+    ///Converter stands for converting from S->D, while formatter is connected with Locale - localisation\\\-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId><!-- required for JSP because embedded by default has Coyote and Catalina, but not Jasper -->
+            <artifactId>tomcat-embed-jasper</artifactId>
+        </dependency>
+<!--        Next library creates own ViewResolver bean overriding default logic.-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!--        Adds transitive validation JSR-303 that contains @Email, @Size... validation annotations, implementations
+        are provided by hibernate validation module.
+        Just put annotations on DTO (and maybe parameters) and then add @Valid/@Validated annotation on bound controller parameter.
+        After that we will receive 4xx errors for non-valid. We can control it manually and get errors adding BindingResult parameter right after validated object.
+        Using binding result we can print errors.
+        Read RegistrationController next (exceptionHandler)
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+
+        <!--
+        !!!SpringBootWebSecurityConfiguration contains default security filter chain.!!!
+
+        Security flow is inherited from ServletContainer flow - Tomcat has own lifecycle - request goes through
+        some filters and if all filters allow, then passed to Servlets.
+        Spring want it to obey its lifecycle, so it injects non-bean DelegatingFilterProxy filter that contains
+        FilterChainProxy bean with a list of bean filters like LogoutFilter->CsfrFilter->...->AuthorizationFilter.
+
+        Authentication (login) MODEL:
+            After successful authentication we just put SecurityContext into SecurityContextHolder's thread local variable:
+                1)There is SecurityContext that holds Authentication object
+                2)Authentication object itself has Principal (some UserDetails - DTO), Credentials (password - cleaned after authentication), Authorities (permission)
+        Authentication LOGIC:
+            One of bean filters - AuthenticationFilter calls AuthenticationManager which using FOREACH tries to authenticate
+            using different Authentication Providers (DAO, JWT, OAuth2, ..., Testing).
+
+
+        DAO: SUMMARY: if there are username and password (by default) parameters in /login POST (by default), then UsernamePasswordAuthenticationFilter processes it
+            DaoAuthenticationProvider has passwordEncoder (to encode passwords), so we need to specify prefix for existing passwords,
+            UserDetailsService (provider of users - we need to implement it. It has method that returns UserDetails - its implementation User is ready to use DTO)
+            To create User object we need name, password and Collection of Authorities (implementations of GrantedAuthorities)
+
+            1) To make simple DAO provider work, we need database column suitable by length for encoded password.
+            2) Implement GrantedAuthority on Role
+            3) Implement UserDetailsService in UserService for example (there will be only 1 bean in app that will be used by spring)
+
+            After that we will have our users from DB check. BUT we still have a lot of autoconfigured staff that should be replaced
+            like login page (provided by spring security). For this we specify own bean SecurityFilterChain in own security configuration.
+            Template of that we can obtain from SpringBootWebSecurityConfiguration.
+
+            After that we have own flow of filters and the one responsible for matching login/password is UsernamePasswordAuthenticationFilter.
+            It checks user input from UI (BY username AND password PARAMETERS) and calls authenticate on authentication manager.
+
+        HTTP BASIC: SUMMARY: also uses DaoAuthenticationProvider - if there is Authorization header, then it is parsed in .doFilterInternal of BasicAuthenticationFilter from request
+            It is one of types that relies on HEADER with name Authorization:
+                Authorization : Basic base64(username:password), so it holds value like 'Basic endodedValue==', where Basic tells what type of encoding.
+
+            Except .formLogin(...) in our filter chain add .httpBasic(Customizer.withDefaults()) and then run request for some resource:
+            it will return with 401 (unauthorized) with header WWW-Authenticate:Basic... what tells browser to show
+            popup with username/password that will be encoded to BASE64 like explained above. Browsers cache Authorization, so it is inconvenient during debug
+
+        ENCODING:
+            If we take a look at DaoAuthenticationProvider we will see that it has field passwordEncoder and it is set through default constructor.
+            It has value of encoder("idNameOfEncoding", idNameToEncoderMap), by default it uses "bcrypt" key, so corresponding encoder from second parameter is used
+            To use in our tool (encode new registered passwords) we need to create bean of type PasswordEncoder that will return same value as above.
+            After that inject the bean to registration/user mapper/service and in created Entity use encoder to encode raw password from DTO.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+
+        <!--        This is an advanced auditing dependency (default holds fields modifiedBy createdAt... in AuditingEntity)
+                Envers works like GIT, it has revision Entity and has Date of revision and ID of revision, revision itself contains info about what data was changed.
+                For this create Revision entity.-->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-envers</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>jakarta.servlet.jsp.jstl</groupId>
             <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
@@ -35,53 +240,35 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.10.1</version>
         </dependency>
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
             <scope>provided</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.2.27</version>
-<!--            <scope>runtime</scope>-->
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.9.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <version>5.9.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>3.24.2</version>
-            <scope>test</scope>
-        </dependency>
-
-
 
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
             <version>1.11.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.eyogo.http.ApplicationRunner</mainClass>
+                    <layout>JAR</layout>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

@@ -1,0 +1,37 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Fragments</title>
+</head>
+<body>
+<ul th:fragment="unitFragment (units)" style="display: block">
+    <th:block th:each="unit : ${units}">
+        <li th:class="${(unit.descendants != null && unit.descendants.size() > 0) ? 'collapsible' : 'simple'}">
+            <a th:href="@{/activities(unit-id=${unit.id})}" th:text="${unit.name}"></a>
+        </li>
+        <div th:if="${unit.descendants != null && !unit.descendants.isEmpty()}"
+             th:replace="~{fragments :: unitFragment(${unit.descendants})}">
+        </div>
+    </th:block>
+</ul>
+
+<div th:fragment="header">
+    <div>
+        <img th:src="@{images/photo.jpg}" alt="Header image" class="headerImg">
+    </div>
+    <ul th:if="${session.user}" class="menu">
+        <li th:if="${session.user.role == T(com.eyogo.http.entity.Role).ADMIN}">
+            <form action="/registration" method="get">
+                <button type="submit">Створити нового користувача</button>
+            </form>
+        </li>
+
+        <li>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit">Вийти</button>
+            </form>
+        </li>
+    </ul>
+</div>
+</body>
+</html>

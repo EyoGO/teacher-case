@@ -1,67 +1,86 @@
 package com.eyogo.http.service;
 
-import com.eyogo.http.dao.UserDao;
-import com.eyogo.http.dto.CreateUserDto;
-import com.eyogo.http.dto.GetUserDto;
-import com.eyogo.http.entity.User;
-import com.eyogo.http.exception.ValidationException;
+import com.eyogo.http.dto.UserCreateDto;
+import com.eyogo.http.dto.UserReadDto;
 import com.eyogo.http.mapper.CreateUserMapper;
-import com.eyogo.http.mapper.GetUserMapper;
-import com.eyogo.http.validation.CreateUserValidator;
-import com.eyogo.http.validation.ValidationResult;
+import com.eyogo.http.mapper.UserReadMapper;
+import com.eyogo.http.projection.UserNameProjection;
+import com.eyogo.http.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class UserService {
+@Service
+@RequiredArgsConstructor
+public class UserService implements UserDetailsService {
 
-    private static final UserService INSTANCE = new UserService();
+    private final UserRepository userRepository;
+    private final UserReadMapper userReadMapper;
+    private final CreateUserMapper createUserMapper;
+    private final ImageService imageService;
 
-    private final UserDao userDao = UserDao.getInstance();
-    private final GetUserMapper getUserMapper = GetUserMapper.getInstance();
-    private final CreateUserValidator createUserValidator = CreateUserValidator.getInstance();
-    private final CreateUserMapper createUserMapper = CreateUserMapper.getInstance();
-    private final ImageService imageService = ImageService.getInstance();
+    private final PasswordEncoder passwordEncoder;
 
-    private UserService() {
-    }
-
-    public Optional<GetUserDto> login(String email, String password) {
-        return userDao.findByEmailAndPassword(email, password)
-                .map(getUserMapper::mapFrom);
+    @SneakyThrows
+    @Transactional
+    public UserReadDto create(UserCreateDto userDto) {
+        return Optional.of(userDto)
+                .map(dto -> {
+                    uploadImage(dto.getImage());
+                    return createUserMapper.mapFrom(dto);
+                })
+                .map(userRepository::save)
+                .map(userReadMapper::mapFrom)
+                .orElseThrow();
     }
 
     @SneakyThrows
-    public Integer create(CreateUserDto userDto) {
-        //validate
-        ValidationResult validationResult = createUserValidator.isValid(userDto);
-        if (!validationResult.isValid()) {
-            throw new ValidationException(validationResult.getErrors());
+    private void uploadImage(MultipartFile image) {
+        if (!image.isEmpty()) {
+            imageService.upload(image.getOriginalFilename(), image.getInputStream());
         }
-        //map to entity
-        User userEntity = createUserMapper.mapFrom(userDto);
-        //saved entity to DAO
-        imageService.upload(userEntity.getImage(), userDto.getImage().getInputStream());
-        userDao.save(userEntity);
-        // return id
-        return userEntity.getId();
     }
 
-    public List<GetUserDto> findAll() {
-        return userDao.findAll().stream()
-                .map(getUserMapper::mapFrom)
+    public List<UserReadDto> findAll() {
+        return userRepository.findAll().stream()
+                .map(userReadMapper::mapFrom)
                 .collect(Collectors.toList());
     }
 
-    public Optional<GetUserDto> findById(Integer id) {
-        return userDao.findById(id)
-                .map(getUserMapper::mapFrom);
+    public Optional<UserReadDto> findById(Integer id) {
+        return userRepository.findById(id)
+                .map(userReadMapper::mapFrom);
     }
 
-    public static UserService getInstance() {
-        return INSTANCE;
+    public List<UserNameProjection> findAllNames() {
+        return userRepository.findAllNames();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByEmail(username)
+                .map(user -> new User(
+                        user.getEmail(),
+                        user.getPassword(),
+                        Collections.singleton(user.getRole())
+                )).orElseThrow(() -> new UsernameNotFoundException("Failed to retrieve user: " + username));
+    }
+
+    @Transactional
+    public void updatePassword(com.eyogo.http.entity.User user, String newPassword) {
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.saveAndFlush(user);
     }
 }

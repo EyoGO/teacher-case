@@ -1,0 +1,28 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Увійти</title>
+  <link rel="stylesheet" type="text/css" th:href="@{css/unit.css}">
+</head>
+<body>
+<div th:insert="~{fragments :: header}"></div>
+<form th:action="@{/login}" method="post">
+  <div style="color : red" th:if="${param.error}">
+    Неправильні дані!
+  </div>
+  <div style="color : red" th:if="${param.expired}">
+    Час дії посилання для відновлення пароля вийшов!
+  </div>
+  <div style="color : green" th:if="${param.reset}">
+    Посилання для зміни пароля відправлено на електронну пошту!
+  </div>
+  <label for="username">Електронна пошта:
+    <input type="text" name="username" id="username">
+  </label><br>
+  <label for="password">Пароль:
+    <input type="password" name="password" id="password">
+  </label><br>
+  <a th:href="@{/password-reset}">Відновити пароль</a>
+  <button type="submit">Увійти</button>
+</form>
+</body>
+</html>

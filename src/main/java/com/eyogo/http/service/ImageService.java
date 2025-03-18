@@ -1,45 +1,41 @@
 package com.eyogo.http.service;
 
-import com.eyogo.http.util.PropertiesUtil;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.Optional;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+
+@Service
 public class ImageService {
 
-    private static final ImageService INSTANCE = new ImageService();
+    private final String bucket;
 
-    private final String basePath = PropertiesUtil.get("image.base.url");
+    public ImageService(@Value("${app.image.bucket}") String bucket) {
+        this.bucket = bucket;
+    }
 
     @SneakyThrows
-    public String upload(String imagePath, InputStream imageContent) {
-        Path imageFullPath = Path.of(basePath, imagePath);
-        try (imageContent) {
-            Files.createDirectories(imageFullPath.getParent());
-            Files.write(imageFullPath, imageContent.readAllBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            return /*"images" + */imagePath; //TODO images here used to specify endpoint
-        } catch (Exception exception) {
-            //TODO
-            throw new RuntimeException("Image uploading error occurred.");
+    public void upload(String image, InputStream content) {
+        Path fullImagePath = Path.of(bucket, image);
+
+        try (content) {
+            Files.createDirectories(fullImagePath.getParent());
+            Files.write(fullImagePath, content.readAllBytes(), CREATE, TRUNCATE_EXISTING);
         }
     }
 
     @SneakyThrows
-    public Optional<InputStream> get(String imagePath) {
-        Path imageFullPath = Path.of(basePath, imagePath);
+    public Optional<byte[]> find(String image) {
+        Path imageFullPath = Path.of(bucket, image);
         return Files.exists(imageFullPath)
-                ? Optional.of(Files.newInputStream(imageFullPath))
+                ? Optional.of(Files.readAllBytes(imageFullPath))
                 : Optional.empty();
-    }
-
-    public static ImageService getInstance() {
-        return INSTANCE;
     }
 }

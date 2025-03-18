@@ -1,0 +1,48 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Розділи</title>
+    <link rel="stylesheet" type="text/css" th:href="@{css/unit.css}">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const collapsibles = document.querySelectorAll('.collapsible');
+
+            collapsibles.forEach(collapsible => {
+                collapsible.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    const content = this.nextElementSibling;
+                    if (content.style.display === 'block') {
+                        content.style.display = 'none';
+                    } else {
+                        content.style.display = 'block';
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<div th:insert="~{fragments :: header}"></div>
+    <form th:action="@{/units}" method="post">
+        <div th:if="${session.user.role == T(com.eyogo.http.entity.Role).ADMIN}">
+            <label for="userSelector">Виберіть користувача:</label>
+            <select name="userToWatch" id="userSelector">
+                <option th:each="user : ${usersSelection}" th:value="${user.id}" th:text="${user.fullName}"
+                        th:selected="${user.id == session.selectedUserId}">
+                </option>
+            </select>
+        </div>
+        <fieldset>
+            <legend>Використовувати каскадний пошук:</legend>
+            <input type="radio" id="yes" name="useCascade" value="true" th:checked="${session.useCascade}">
+            <label for="yes">Так</label>
+            <input type="radio" id="no" name="useCascade" value="false" th:checked="${!session.useCascade}">
+            <label for="no">Ні</label><br>
+        </fieldset>
+        <input type="submit" value="Підтвердити" />
+    </form>
+
+<h1>Розділи:</h1>
+<div th:replace="~{fragments :: unitFragment (${units})}"></div>
+</body>
+</html>

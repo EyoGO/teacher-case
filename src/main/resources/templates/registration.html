@@ -1,0 +1,40 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Реєстрація користувачів</title>
+    <link rel="stylesheet" type="text/css" th:href="@{css/unit.css}">
+</head>
+<body>
+<form th:action="@{/registration}" method="post" enctype="multipart/form-data" th:object="${user}">
+    <label for="firstName">Ім'я:
+        <input type="text" name="firstName" id="firstName" th:value="*{firstName}" required>
+    </label><br>
+    <label for="lastName">Прізвище:
+        <input type="text" name="lastName" id="lastName" th:value="*{lastName}" required>
+    </label><br>
+    <label for="birthday">Дата народження:
+        <input type="date" name="birthday" id="birthday" th:value="*{birthday}" required>
+    </label><br>
+    <label for="imageId">Зображення:
+        <input type="file" name="image" id="imageId">
+    </label><br>
+    <label for="emailId">Електронна адреса:
+        <input type="text" name="email" id="emailId" th:value="*{email}" required>
+    </label><br>
+    <label for="passwordId">Пароль:
+        <input type="password" name="password" id="passwordId" required>
+    </label><br>
+    <select name="role" id="role" required>
+        <option th:each="role : ${roles}" th:value="${role}" th:text="${role}" th:selected="${role.name() == user.role}"></option>
+    </select>
+    <br>
+    <div th:each="gender : ${genders}">
+        <input th:id="${gender}" type="radio" name="gender" th:value="${gender}" th:checked="${gender.name() == user.gender}" required>
+        <label th:for="${gender}" th:text="${gender}"></label>
+    </div>
+    <button type="submit">Підтвердити</button>
+    <div th:if="${errors}" style="color: red">
+        <div th:each="error : ${errors}" th:text="${error.defaultMessage}"></div>
+    </div>
+</form>
+</body>
+</html>

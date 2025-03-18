@@ -1,0 +1,33 @@
+app:
+  image:
+    bucket: images
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/postgres}
+    username: ${SPRING_DATASOURCE_URL:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:root}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties.hibernate:
+      show_sql: true
+      format_sql: true
+      hbm2ddl: validate
+    open-in-view: false #database queries can/can't be performed during view rendering. when TRUE, then transactions open on view, to disable set FALSE
+  mail:
+    host: smtp.gmail.com
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true
+
+logging:
+  level:
+    root: INFO
+  file:
+    name: eyo.log
+    path: /

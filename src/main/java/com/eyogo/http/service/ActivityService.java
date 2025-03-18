@@ -1,114 +1,104 @@
 package com.eyogo.http.service;
 
-import com.eyogo.http.dao.ActivitiyDao;
-import com.eyogo.http.dao.UnitDao;
-import com.eyogo.http.dao.UserDao;
-import com.eyogo.http.dto.CreateActivityDto;
-import com.eyogo.http.dto.GetActivityDto;
+import com.eyogo.http.dto.ActivityCreateEditDto;
+import com.eyogo.http.dto.ActivityReadDto;
 import com.eyogo.http.entity.Activity;
 import com.eyogo.http.entity.Unit;
-import com.eyogo.http.mapper.CreateActivityMapper;
-import com.eyogo.http.mapper.GetUserMapper;
+import com.eyogo.http.mapper.ActivityCreateMapper;
+import com.eyogo.http.repository.ActivityRepository;
+import com.eyogo.http.repository.UnitRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
+@RequiredArgsConstructor
 public class ActivityService {
+    private final ActivityRepository activityRepository;
 
-    private static final ActivityService INSTANCE = new ActivityService();
+    private final UnitRepository unitRepository;
 
-    private final ActivitiyDao activitiyDao = ActivitiyDao.getInstance();
-    private final UnitDao unitDao = UnitDao.getInstance();
-    private final UserDao userDao = UserDao.getInstance();
+    private final ActivityCreateMapper activityCreateMapper;
 
-    private final GetUserMapper getUserMapper = GetUserMapper.getInstance();
-    private final CreateActivityMapper createActivityMapper = CreateActivityMapper.getInstance();
+    @SneakyThrows
+    public Integer create(ActivityCreateEditDto activityDto) {
+        Unit unit = unitRepository.findById(activityDto.getUnitId())
+                .orElseThrow(() -> new EntityNotFoundException("Unit not found"));
+        Activity activityEntity = activityCreateMapper.mapFrom(activityDto);
+        activityEntity.setUnit(unit);
 
-    private ActivityService() {
+        Activity save = activityRepository.save(activityEntity);
+        return save.getId();
     }
 
     @SneakyThrows
-    public Integer create(CreateActivityDto activityDto) {
-        Activity activityEntity = createActivityMapper.mapFrom(activityDto);
-        activitiyDao.save(activityEntity);
-        // return id
-        return activityEntity.getId();
+    public void update(Integer id, ActivityCreateEditDto activityDto) {
+        Optional<Activity> byId = activityRepository.findById(id);
+        if (byId.isEmpty()) {
+            throw new EntityNotFoundException("Activity not found.");
+        }
+
+        Activity activity = byId.get();
+        //TODO validate correct parameters
+        //TODO use criteria API or QueryDSL
+        if (activityDto.getActivityName() != null) {
+            activity.setActivityName(activityDto.getActivityName());
+        }
+        if (activityDto.getDescription() != null) {
+            activity.setDescription(activityDto.getDescription());
+        }
+        activityRepository.save(activity);
     }
 
     @SneakyThrows
-    public void update(Integer id, CreateActivityDto activityDto) {
-        Activity activityEntity = createActivityMapper.mapFrom(activityDto);
-        activityEntity.setId(id);
-        activitiyDao.update(activityEntity);
+    public void delete(Integer id) {
+        activityRepository.deleteById(id);
     }
 
-    @SneakyThrows
-    public boolean delete(Integer id) {
-        return activitiyDao.delete(id);
-    }
-
-    public List<GetActivityDto> findAll() {
-        List<Activity> allActivities = activitiyDao.findAll();
-        return allActivities.stream()
-                .map(activity -> GetActivityDto.builder()
-                        .id(activity.getId())
-                        .user(userDao.findById(activity.getUserId()).map(getUserMapper::mapFrom).orElse(null))//TODO maybe just pass userID
-                        .name(activity.getActivityName())
-                        .description(activity.getDescription())
-                        .author(userDao.findById(activity.getAuthorId()).map(getUserMapper::mapFrom).orElse(null))//TODO maybe just pass userID
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    public Optional<GetActivityDto> findStrictedDataById(Integer activityId) {
-        Optional<Activity> activitiyOptional = activitiyDao.findById(activityId);
-        return activitiyOptional.map(activity -> GetActivityDto.builder()
+    public Optional<ActivityReadDto> findActivityById(Integer activityId) {
+        Optional<Activity> activitiyOptional = activityRepository.findById(activityId);
+        return activitiyOptional.map(activity -> ActivityReadDto.builder()
                 .id(activity.getId())
                 .name(activity.getActivityName())
                 .description(activity.getDescription())
+                .authorId(activity.getAuthorId())
                 .build());
     }
 
-    public List<GetActivityDto> findByUserId(Integer userId) {
-        List<Activity> allActivitiesOfUser = activitiyDao.findByUser(userId);
-        return allActivitiesOfUser.stream()
-                .map(activity -> GetActivityDto.builder()
-                        .id(activity.getId())
-                        .user(userDao.findById(activity.getUserId()).map(getUserMapper::mapFrom).orElse(null))//TODO maybe just pass userID
-                        .name(activity.getActivityName())
-                        .description(activity.getDescription())
-                        .author(userDao.findById(activity.getAuthorId()).map(getUserMapper::mapFrom).orElse(null))//TODO maybe just pass userID
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    public List<GetActivityDto> findByUserAndUnitId(Integer userId, Integer unitId, boolean useCascade) {
-        List<Activity> allActivitiesOfUserByUnit = activitiyDao.findByUserAndUnit(userId, unitId);
+    public List<ActivityReadDto> findByUserAndUnitId(Integer userId, Integer unitId, boolean useCascade) {
+        List<Activity> allActivitiesOfUserByUnit;
         if (useCascade) {
-            fetchCascade(userId, unitId, allActivitiesOfUserByUnit);
+            List<Integer> unitIds = new LinkedList<>();
+            unitIds.add(unitId);
+            fetchCascadeIds(unitId, unitIds);
+            allActivitiesOfUserByUnit = activityRepository.findByUserIdAndUnitIdInOrderById(userId, unitIds);
+        } else {
+            allActivitiesOfUserByUnit = activityRepository.findByUserIdAndUnitIdOrderById(userId, unitId);
         }
         return allActivitiesOfUserByUnit.stream()
-                .map(activity -> GetActivityDto.builder()
+                .map(activity -> ActivityReadDto.builder()
                         .id(activity.getId())
-                        .user(userDao.findById(activity.getUserId()).map(getUserMapper::mapFrom).orElse(null))//TODO maybe just pass userID
+                        .user(activity.getUserId())
                         .name(activity.getActivityName())
                         .description(activity.getDescription())
-                        .author(userDao.findById(activity.getAuthorId()).map(getUserMapper::mapFrom).orElse(null))//TODO maybe just pass userID
+                        .authorId(activity.getAuthorId())
                         .build())
                 .collect(Collectors.toList());
     }
 
-    private void fetchCascade(Integer userId, Integer unitId, List<Activity> allActivitiesOfUserByUnit) {//TODO try using batch SQL query (accumulate queries)
-        List<Unit> subUnits = unitDao.findSubUnits(unitId);
-        for (Unit unit: subUnits) {
-            allActivitiesOfUserByUnit.addAll(activitiyDao.findByUserAndUnit(userId, unit.getId()));
-            fetchCascade(userId, unit.getId(), allActivitiesOfUserByUnit);
+    private void fetchCascadeIds(Integer unitId, List<Integer> unitsIds) {
+        List<Integer> newIds = unitRepository.findAllByParentId(unitId).stream()
+                .map(Unit::getId)
+                .toList();
+        unitsIds.addAll(newIds);
+        for (Integer id : newIds) {
+            fetchCascadeIds(id, unitsIds);
         }
-    }
-
-    public static ActivityService getInstance() {
-        return INSTANCE;
     }
 }

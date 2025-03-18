@@ -1,33 +1,44 @@
 package com.eyogo.http.mapper;
 
-import com.eyogo.http.dto.CreateUserDto;
+import com.eyogo.http.dto.UserCreateDto;
 import com.eyogo.http.entity.Gender;
 import com.eyogo.http.entity.Role;
 import com.eyogo.http.entity.User;
 import com.eyogo.http.util.LocalDateFormatter;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+import java.util.Optional;
+import java.util.function.Predicate;
 
-public class CreateUserMapper implements Mapper<CreateUserDto, User> {
+@Component
+@RequiredArgsConstructor
+public class CreateUserMapper implements Mapper<UserCreateDto, User> {
 
-    public static final String IMAGE_FOLDER = "users";
-    private static final CreateUserMapper INSTANCE = new CreateUserMapper();
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public User mapFrom(CreateUserDto object) {
-        return User.builder()
+    public User mapFrom(UserCreateDto object) {
+        User user = User.builder()
                 .firstName(object.getFirstName())
                 .lastName(object.getLastName())
                 .email(object.getEmail())
-                .password(object.getPassword())
                 .birthday(LocalDateFormatter.format(object.getBirthday()))
-                .image(IMAGE_FOLDER + File.separator + object.getEmail() + "_" + object.getImage().getSubmittedFileName())
                 .role(Role.valueOf(object.getRole()))
                 .gender(Gender.valueOf(object.getGender()))
                 .build();
-    }
 
-    public static CreateUserMapper getInstance() {
-        return INSTANCE;
+        Optional.ofNullable(object.getPassword())
+                .filter(StringUtils::isNotBlank)
+                .map(passwordEncoder::encode)
+                .ifPresent(user::setPassword);
+
+        Optional.ofNullable(object.getImage())
+                .filter(Predicate.not(MultipartFile::isEmpty))
+                .ifPresent(image -> user.setImage(image.getOriginalFilename()));
+        return user;
     }
 }
