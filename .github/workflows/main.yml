@@ -48,4 +48,5 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             docker pull ${{ secrets.DOCKER_REGISTRY_USER }}/teacher-case:latest
+            docker-compose -f /root/teacher-case/docker-compose.yml down
             docker-compose -f /root/teacher-case/docker-compose.yml up -d
